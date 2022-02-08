@@ -6,6 +6,5 @@
   tasks:
     - name: Make sure all packages are up-to-date
       apt:
-        name: "*"
-        state: latest
+        upgrade: dist
         update_cache: true
