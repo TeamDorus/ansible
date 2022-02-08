@@ -1,5 +1,5 @@
 ---
-- name: Playbook om een development systeem van alle software en instellingen te voorzien
+- name: Playbook om een development systeem op te tuigen
   hosts: dev
   become: true
 
@@ -23,9 +23,9 @@
 
     ###################################################################
     #
-    #         Install ansible
+    #         Install linting tools
     #
-    - name: Installeer basis requirements voor ansible
+    - name: Installeer basis requirements voor ansible en SublimeLinter
       apt:
         name:
           - ansible
@@ -37,6 +37,7 @@
         name:
           - yamllint
           - ansible-lint
+          - pylint
 
 
     ###################################################################
@@ -73,4 +74,3 @@
     #
     #         Clone relevant GIT repositories
     #
-

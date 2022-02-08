@@ -74,7 +74,7 @@
     #       Setup remote docker api for Portainer
     #
     ######################################################################################
-    - name: Create the directory for the docker remote api service definition file
+    - name: Create directory for the docker remote api service definition file
       file:
         path: /etc/systemd/system/docker.service.d
         state: directory
@@ -91,7 +91,7 @@
       register: docker_service
 
 
-    - name: Restart the docker service and also issue a deamon-reload to pick-up config changes
+    - name: Restart the docker service and issue a deamon-reload
       systemd:
         name: docker
         state: restarted
@@ -115,7 +115,8 @@
     portainer_hostname: pindos
     portainer_endpoint: "http://{{ portainer_hostname }}:9000/api"
     endpoints:
-      - {name: "{{ ansible_hostname }}", url: "tcp://{{ ansible_default_ipv4.address }}:2375"}
+      - {name: "{{ ansible_hostname }}",
+         url: "tcp://{{ ansible_default_ipv4.address }}:2375"}
 
 
   tasks:
