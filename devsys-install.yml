@@ -68,3 +68,9 @@
         state: present
         update_cache: true
 
+
+    ###################################################################
+    #
+    #         Clone relevant GIT repositories
+    #
+
