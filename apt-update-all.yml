@@ -1,0 +1,11 @@
+---
+- name: Playbook om alle systemen te updaten naar de laatste versie van de packages
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Make sure all packages are up-to-date
+      apt:
+        name: "*"
+        state: latest
+        update_cache: true

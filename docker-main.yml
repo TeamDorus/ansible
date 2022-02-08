@@ -1,0 +1,109 @@
+---
+
+######################################################################################
+#
+#       Install docker & docker-compose
+#
+######################################################################################
+- name: Play to install docker and docker-compose
+  hosts: 
+    - dockerhosts
+    - portainerhost
+  become: true
+
+  tasks:
+    - name: Make sure all packages are up-to-date
+      apt:
+        upgrade: dist
+        update_cache: true
+
+
+    - name: Install prerequisites
+      apt:
+        name:
+          - net-tools
+          - python3-pip
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+        state: present
+
+
+    - name: Add docker apt-key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+
+
+    - name: Add docker repo
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+
+
+    - name: Remove AppArmor package since it conflicts with Docker
+      apt:
+        name: apparmor
+        state: absent
+
+
+    - name: Install docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: true
+
+
+    - name: Add user to the docker group
+      user:
+        name: eric
+        groups: docker
+        append: true
+
+
+    - name: Install docker-compose
+      pip:
+        name: docker-compose
+
+
+    ######################################################################################
+    #
+    #       Setup remote docker api for Portainer
+    #
+    ######################################################################################
+    - name: Create the directory for the docker remote api service definition file
+      file:
+        path: /etc/systemd/system/docker.service.d
+        state: directory
+        mode: '0755'
+
+
+    - name: Copy the file for docker remote api service definition to the target
+      copy:
+        src: ./docker-remote-api.conf
+        dest: /etc/systemd/system/docker.service.d/docker-remote-api.conf
+        owner: root
+        group: root
+        mode: '0644'
+      register: docker_service
+
+
+    - name: Restart the docker service and also issue a deamon-reload to pick-up config changes
+      systemd:
+        name: docker
+        state: restarted
+        daemon_reload: yes
+      when: docker_service.changed
+
+
+######################################################################################
+#
+#       Add hosts as endpoints in portainer
+#
+######################################################################################
+- name: Include play to add docker hosts as endpoints to portainer
+  include: docker-add2portainer.yml
+
