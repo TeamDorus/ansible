@@ -8,6 +8,10 @@
   hosts: dev
   become: true
 
+  vars:
+    - dev_user: "eric"
+
+
   pre_tasks:
     - name: Load variable files
       include_vars: "{{ item }}"
@@ -50,27 +54,27 @@
 
     ###################################################################
     #
-    #         Install ssh privatekey for user "eric"
+    #         Install ssh privatekey for dev_user
     #
-    - name: Installeer privatekey voor user "eric"
+    - name: Installeer privatekey voor dev_user
       copy:
-        src: ~eric/.ssh/id_rsa
-        dest: ~eric/.ssh/id_rsa
-        owner: eric
-        group: eric
+        src: "~{{ dev_user }}/.ssh/id_rsa"
+        dest: "~{{ dev_user }}/.ssh/id_rsa"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
         mode: '0600'
 
 
     ###################################################################
     #
-    #         Install ssh publickey for user "eric"
+    #         Install ssh publickey for dev_user
     #
-    - name: Installeer privatekey voor user "eric"
+    - name: Installeer privatekey voor dev_user
       copy:
-        src: ~eric/.ssh/id_rsa.pub
-        dest: ~eric/.ssh/id_rsa.pub
-        owner: eric
-        group: eric
+        src: "~{{ dev_user }}/.ssh/id_rsa.pub"
+        dest: "~{{ dev_user }}/.ssh/id_rsa.pub"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
         mode: '0644'
 
 
@@ -109,8 +113,8 @@
       git:
         repo: https://github.com/TeamDorus/ansible.git
         dest: "{{ projects_dir }}/ansible"
-        clone: false
-        update: false
+        clone: true
+        update: true
 
 
 #######################################################################
