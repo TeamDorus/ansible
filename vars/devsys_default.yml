@@ -1,2 +1,2 @@
 ---
-projects_dir: "~/Documents"
+projects_dir: "~{{ ansible_user_id }}/Documents"
