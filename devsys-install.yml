@@ -8,6 +8,14 @@
   hosts: dev
   become: true
 
+  pre_tasks:
+    - name: Load variable files
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "vars/devsys_{{ ansible_hostname }}.yml"
+        - "vars/devsys_default.yml"
+
+
   tasks:
     - name: Make sure all packages are up-to-date
       apt:
@@ -97,6 +105,12 @@
     #
     #         Clone relevant GIT repositories
     #
+    - name: Clone ansible repository
+      git:
+        repo: https://github.com/TeamDorus/ansible.git
+        dest: "{{ projects_dir }}/ansible"
+        clone: false
+        update: false
 
 
 #######################################################################
