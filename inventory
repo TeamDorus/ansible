@@ -3,8 +3,17 @@
 nextcloud
 
 
-[dev]
+
+[devworkstation]
 192.168.55.73
+
+[devserver]
+pindos
+
+[dev:children]
+devserver
+devworkstation
+
 
 
 [dockerhosts]
@@ -12,9 +21,9 @@ nextcloud
 olympos
 nextcloud
 
-
 [portainerhost]
 pindos
+
 
 
 [live]

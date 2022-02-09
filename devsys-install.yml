@@ -23,6 +23,32 @@
 
     ###################################################################
     #
+    #         Install ssh privatekey for user "eric"
+    #
+    - name: Installeer privatekey voor user "eric"
+      copy:
+        src: ~eric/.ssh/id_rsa
+        dest: ~eric/.ssh/id_rsa
+        owner: eric
+        group: eric
+        mode: '0600'
+
+
+    ###################################################################
+    #
+    #         Install ssh publickey for user "eric"
+    #
+    - name: Installeer privatekey voor user "eric"
+      copy:
+        src: ~eric/.ssh/id_rsa.pub
+        dest: ~eric/.ssh/id_rsa.pub
+        owner: eric
+        group: eric
+        mode: '0644'
+
+
+    ###################################################################
+    #
     #         Install linting tools
     #
     - name: Installeer basis requirements voor ansible en SublimeLinter
