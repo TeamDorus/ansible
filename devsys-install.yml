@@ -1,4 +1,9 @@
 ---
+###################################################################
+#
+#         Generic play book for development system (server & worksattion)
+#           hosts: dev
+#
 - name: Playbook om een development systeem op te tuigen
   hosts: dev
   become: true
@@ -18,6 +23,8 @@
       apt:
         name:
           - git
+          - tree
+          - python3-pip
         state: present
 
 
@@ -49,13 +56,12 @@
 
     ###################################################################
     #
-    #         Install linting tools
+    #         Install ansible & related tools
     #
     - name: Installeer basis requirements voor ansible en SublimeLinter
       apt:
         name:
           - ansible
-          - python3-pip
         state: present
 
     - name: Installeer ansible test tools
@@ -63,8 +69,34 @@
         name:
           - yamllint
           - ansible-lint
+
+
+    ###################################################################
+    #
+    #         Install python tools, flask, etc
+    #
+    - name: Installeer python tools
+      pip:
+        name:
           - pylint
 
+
+    ###################################################################
+    #
+    #         Clone relevant GIT repositories
+    #
+
+
+###################################################################
+#
+#         Play book for development system worksattion
+#           hosts: devworkstation
+#
+- name: Playbook om een development systeem op te tuigen
+  hosts: devworkstation
+  become: true
+
+  tasks:
 
     ###################################################################
     #
@@ -94,9 +126,3 @@
           - sublime-text
         state: present
         update_cache: true
-
-
-    ###################################################################
-    #
-    #         Clone relevant GIT repositories
-    #
