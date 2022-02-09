@@ -1,5 +1,5 @@
 ---
-###################################################################
+#######################################################################
 #
 #         Generic play book for development system (server & worksattion)
 #           hosts: dev
@@ -19,12 +19,24 @@
     #
     #         Install generic tools
     #
-    - name: Installeer algemene ontwikkel tools
+    - name: Installeer algemene (ontwikkel) tools
       apt:
         name:
           - git
           - tree
           - python3-pip
+          - cifs-utils
+          - net-tools
+        state: present
+
+    - name: Installeer tools om repositories toe te voegen
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
         state: present
 
 
@@ -58,7 +70,7 @@
     #
     #         Install ansible & related tools
     #
-    - name: Installeer basis requirements voor ansible en SublimeLinter
+    - name: Installeer ansible
       apt:
         name:
           - ansible
@@ -87,12 +99,14 @@
     #
 
 
-###################################################################
+#######################################################################
+#######################################################################
+#######################################################################
 #
 #         Play book for development system worksattion
 #           hosts: devworkstation
 #
-- name: Playbook om een development systeem op te tuigen
+- name: Playbook om development workstation addons op te tuigen
   hosts: devworkstation
   become: true
 
@@ -102,21 +116,11 @@
     #
     #         Install Sublime Text editor
     #
-    - name: Installeer basis requirements om Sublime repository toe te voegen
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg-agent
-          - software-properties-common
-        state: present
-
     - name: Add Sublime apt-key
       apt_key:
         url: https://download.sublimetext.com/sublimehq-pub.gpg
 
-    - name: Add Sublime repo
+    - name: Add Sublime repository
       apt_repository:
         repo: deb https://download.sublimetext.com/ apt/stable/
 
