@@ -45,7 +45,6 @@ traccar
 
 
 [all:children]
-test
 dev
 dockerhosts
 portainerhost

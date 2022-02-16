@@ -122,6 +122,16 @@
         group: "eric"
         mode: '0600'
 
+
+    - name: Set timezone to Europe/Amsterdam
+      timezone:
+        name: Europe/Amsterdam
+
+
+    ############################################################
+    #
+    #   Final action, clear authorized_keys file for user "root"
+    #
     - name: Remove authorized_keys file for root
       file:
         path: "~/.ssh/authorized_keys"

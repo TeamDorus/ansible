@@ -12,6 +12,7 @@
     - dev_user: "eric"
 
 
+
   pre_tasks:
     - name: Load variable files
       include_vars: "{{ item }}"
