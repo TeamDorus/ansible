@@ -1,0 +1,128 @@
+---
+###################################################################################
+#
+#           Create LXC container on Proxmox host
+#
+###################################################################################
+#
+
+- name: Play for "localhost" to create a new LXC container on Proxmox host
+  hosts: localhost
+  gather_facts: false   # no info from localhost needed
+
+  vars_files:
+    - vars/secrets.yml
+
+
+  vars_prompt:
+
+    - name: ip_address
+      prompt: "\nNew container - Enter IP address"
+      private: false
+
+    - name: lxc_hostname
+      prompt: "New Container - Enter hostname"
+      private: false
+
+
+  tasks:
+
+    - name: Verify ip address format from input
+      set_fact:
+        lxc_ip_address: "{{ ip_address | ansible.netcommon.ipaddr('address') }}"
+
+    - name: Create new container
+      proxmox:
+        vmid: ""  # choose next available vmid
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        api_host: "hm80"
+        node: "hm80"
+        hostname: "{{ lxc_hostname }}"
+        password: "{{ lxc_root_password }}"
+        pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        cores: 1
+        memory: 1024
+        swap: 512
+        disk: "local-zfs:8"
+        ostemplate: "ds218:vztmpl/ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
+        netif: '{"net0":"name=eth0,ip={{ lxc_ip_address }}/24,gw=192.168.55.1,bridge=vmbr0"}'
+        # netif: '{"net0":"name=eth0,ip=dhcp,bridge=vmbr0"}'
+        state: present
+      register: result
+
+    - name: Get vmid of new container
+      set_fact:
+        new_vmid: "{{ result.msg | regex_search('([0-9]+)') }}"
+
+
+    - name: Start new container
+      proxmox:
+        vmid: "{{ new_vmid }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        api_host: "hm80"
+        state: started
+      register: result
+
+
+###################################################################################
+#
+#           Configure new LXC container
+#
+###################################################################################
+#
+
+- name: Play to configure the new LXC container on Proxmox host
+  hosts: "{{ hostvars['localhost']['lxc_ip_address'] }}"
+  remote_user: "root"
+  gather_facts: false   # wait with gathering facts until host is up and running
+
+  vars_files:
+    - vars/secrets.yml
+
+
+  tasks:
+
+    - name: Wait for container to become reachable
+      wait_for_connection:
+        timeout: 300
+
+
+    - name: Gather facts for first time
+      setup:
+
+
+    - name: Make sure all packages are up-to-date
+      apt:
+        upgrade: dist
+        update_cache: true
+
+
+    - name: Create user 'eric' and add to sudo group
+      user:
+        name: eric
+        shell: "/bin/bash"
+        groups: sudo
+        append: true
+
+    - name: Create .ssh directory for eric
+      file:
+        path: "~eric/.ssh"
+        state: directory
+        owner: "eric"
+        group: "eric"
+        mode: g-rwx,o-rwx
+
+    - name: Copy the publickey to '~eric/.ssh/authorized_keys'
+      copy:
+        src: "~/.ssh/authorized_keys"
+        dest: "~eric/.ssh/authorized_keys"
+        owner: "eric"
+        group: "eric"
+        mode: '0600'
+
+    - name: Remove authorized_keys file for root
+      file:
+        path: "~/.ssh/authorized_keys"
+        state: absent

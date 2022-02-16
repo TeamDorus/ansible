@@ -88,11 +88,12 @@
           - ansible
         state: present
 
-    - name: Installeer ansible test tools
+    - name: Installeer ansible test tools and other python modules
       pip:
         name:
           - yamllint
           - ansible-lint
+          - proxmoxer
 
 
     ###################################################################
