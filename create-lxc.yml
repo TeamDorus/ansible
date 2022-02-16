@@ -36,7 +36,7 @@
         vmid: ""  # choose next available vmid
         api_user: "{{ proxmox_api_user }}"
         api_password: "{{ proxmox_api_password }}"
-        api_host: "hm80"
+        api_host: "hm80xx"
         node: "hm80"
         hostname: "{{ lxc_hostname }}"
         password: "{{ lxc_root_password }}"
