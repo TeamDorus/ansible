@@ -12,7 +12,6 @@
     - dev_user: "eric"
 
 
-
   pre_tasks:
     - name: Load variable files
       include_vars: "{{ item }}"
@@ -113,7 +112,7 @@
     #
     - name: Clone ansible repository
       git:
-        repo: https://github.com/TeamDorus/ansible.git
+        repo: git@github.com:TeamDorus/ansible.git
         dest: "{{ projects_dir }}/ansible"
         clone: true
         update: true
