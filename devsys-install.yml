@@ -5,7 +5,9 @@
 #           hosts: dev
 #
 - name: Playbook om een development systeem op te tuigen
-  hosts: dev
+  hosts:
+    - devserver
+    - devworkstation
   become: true
 
   vars:
@@ -16,7 +18,7 @@
     - name: Load variable files
       include_vars: "{{ item }}"
       with_first_found:
-        - "vars/devsys_{{ ansible_hostname }}.yml"
+        - "vars/devsys_{{ ansible_distribution }}.yml"
         - "vars/devsys_default.yml"
 
 
@@ -110,9 +112,17 @@
     #
     #         Clone relevant GIT repositories
     #
+    - name: Create ansible directory
+      file:
+        path: "{{ projects_dir }}/ansible"
+        state: directory
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+
     - name: Clone ansible repository
       git:
         repo: git@github.com:TeamDorus/ansible.git
+        accept_hostkey: true
         dest: "{{ projects_dir }}/ansible"
         clone: true
         update: true

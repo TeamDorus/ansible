@@ -102,6 +102,7 @@
     - name: Create user 'eric' and add to sudo group
       user:
         name: eric
+        password: "{{ lxc_eric_password_hash }}"
         shell: "/bin/bash"
         groups: sudo
         append: true
