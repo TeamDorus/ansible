@@ -117,7 +117,7 @@
         clone: true
         update: true
       vars:
-        ansible_become: false
+        ansible_become: false   # use private key from {{ dev_user }}
 
 
 #######################################################################
