@@ -20,6 +20,7 @@ localhost
 [devserver]
 pindos
 192.168.55.130
+192.168.55.133
 
 [dev:children]
 devserver
