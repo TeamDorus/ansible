@@ -116,6 +116,8 @@
         dest: "{{ projects_dir }}/ansible"
         clone: true
         update: true
+      vars:
+        ansible_become: false
 
 
 #######################################################################
