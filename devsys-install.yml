@@ -129,6 +129,27 @@
       vars:
         ansible_become: false   # use private key from {{ dev_user }}
 
+    - name: Copy ansible vault secrets.yml
+      copy:
+        src: "{{ item }}"
+        dest: "{{ projects_dir }}/ansible/vars/secrets.yml"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
+      with_first_found:
+        - "~{{ dev_user }}/ansible/vars/secrets.yml"
+        - "~{{ dev_user }}/Documents/ansible/vars/secrets.yml"
+
+
+    - name: Copy ansible vault password file
+      copy:
+        src: "~{{ dev_user }}/.ansible/passwd.txt"
+        dest: "~{{ dev_user }}/.ansible/passwd.txt"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0600'
+
 
 #######################################################################
 #######################################################################
