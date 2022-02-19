@@ -47,7 +47,8 @@
         disk: "local-zfs:8"
         ostemplate: "ds218:vztmpl/ubuntu-21.10-standard_21.10-1_amd64.tar.zst"
         netif: '{"net0":"name=eth0,ip={{ lxc_ip_address }}/24,gw=192.168.55.1,bridge=vmbr0"}'
-        # netif: '{"net0":"name=eth0,ip=dhcp,bridge=vmbr0"}'
+        features:
+          - nesting=1
         state: present
       register: result
 
