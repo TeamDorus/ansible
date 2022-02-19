@@ -110,7 +110,7 @@
 
     ###################################################################
     #
-    #         Clone relevant GIT repositories
+    #         Clone ansible GIT repository and related secrets files
     #
     - name: Create ansible directory
       file:
@@ -149,6 +149,40 @@
         owner: "{{ dev_user }}"
         group: "{{ dev_user }}"
         mode: '0600'
+
+
+    ###################################################################
+    #
+    #         Clone flaskapp GIT repository and related secrets files
+    #
+    - name: Create ansible directory
+      file:
+        path: "{{ projects_dir }}/flaskapp"
+        state: directory
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+
+    - name: Clone ansible repository
+      git:
+        repo: git@github.com:TeamDorus/flaskapp.git
+        accept_hostkey: true
+        dest: "{{ projects_dir }}/flaskapp"
+        clone: true
+        update: true
+      vars:
+        ansible_become: false   # use private key from {{ dev_user }}
+
+    - name: Copy .env file with api keys etc
+      copy:
+        src: "{{ item }}"
+        dest: "{{ projects_dir }}/flaskapp/flask/.env"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
+      with_first_found:
+        - "~{{ dev_user }}/flaskapp/flask/.env"
+        - "~{{ dev_user }}/Documents/flaskapp/flask/.env"
 
 
 #######################################################################
