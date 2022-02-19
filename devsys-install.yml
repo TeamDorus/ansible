@@ -106,6 +106,7 @@
       pip:
         name:
           - pylint
+          - virtualenv
 
 
     ###################################################################
@@ -141,7 +142,6 @@
         - "~{{ dev_user }}/ansible/vars/secrets.yml"
         - "~{{ dev_user }}/Documents/ansible/vars/secrets.yml"
 
-
     - name: Copy ansible vault password file
       copy:
         src: "~{{ dev_user }}/.ansible/passwd.txt"
@@ -162,6 +162,12 @@
         owner: "{{ dev_user }}"
         group: "{{ dev_user }}"
 
+    - name: Create virtual environment for flaskapp
+      pip:
+        requirements: "{{ projects_dir }}/flaskapp/flask/requirements.txt"
+        virtualenv: "{{ projects_dir }}/flaskapp/flask/venv"
+        virtualenv_command: "python3 -m venv"
+        
     - name: Clone flaskapp repository
       git:
         repo: git@github.com:TeamDorus/flaskapp.git
