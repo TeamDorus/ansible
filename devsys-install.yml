@@ -39,6 +39,7 @@
           - git
           - tree
           - python3-pip
+          - python3-venv
           - cifs-utils
           - net-tools
         state: present
@@ -106,7 +107,6 @@
       pip:
         name:
           - pylint
-          - virtualenv
 
 
     ###################################################################
