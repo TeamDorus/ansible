@@ -155,14 +155,14 @@
     #
     #         Clone flaskapp GIT repository and related secrets files
     #
-    - name: Create ansible directory
+    - name: Create flaskapp directory
       file:
         path: "{{ projects_dir }}/flaskapp"
         state: directory
         owner: "{{ dev_user }}"
         group: "{{ dev_user }}"
 
-    - name: Clone ansible repository
+    - name: Clone flaskapp repository
       git:
         repo: git@github.com:TeamDorus/flaskapp.git
         accept_hostkey: true
