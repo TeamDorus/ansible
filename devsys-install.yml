@@ -1,9 +1,10 @@
 ---
-#######################################################################
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #         Generic play book for development system (server & worksattion)
 #           hosts: dev
 #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een development systeem op te tuigen
   hosts:
     - devserver
@@ -29,10 +30,11 @@
         update_cache: true
 
 
-    ###################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #         Install generic tools
     #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Installeer algemene (ontwikkel) tools
       apt:
         name:
@@ -55,10 +57,11 @@
         state: present
 
 
-    ###################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #         Install ssh privatekey for dev_user
     #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Installeer privatekey voor dev_user
       copy:
         src: "~{{ dev_user }}/.ssh/id_rsa"
@@ -68,10 +71,11 @@
         mode: '0600'
 
 
-    ###################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #         Install ssh publickey for dev_user
     #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Installeer privatekey voor dev_user
       copy:
         src: "~{{ dev_user }}/.ssh/id_rsa.pub"
@@ -81,10 +85,11 @@
         mode: '0644'
 
 
-    ###################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #         Install ansible & related tools
     #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Installeer ansible
       apt:
         name:
@@ -99,20 +104,43 @@
           - proxmoxer
 
 
-    ###################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #         Install python tools, flask, etc
     #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Installeer python tools
       pip:
         name:
           - pylint
 
 
-    ###################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Install terraform
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Voeg terraform apt-key toe
+      apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+
+
+    - name: Voeg terraform repo toe
+      apt_repository:
+        repo: deb [arch=amd64] https://apt.releases.hashicorp.com focal main
+
+    - name: Installeer terraform
+      apt:
+        name: terraform
+        state: present
+        update_cache: true
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #         Clone ansible GIT repository and related secrets files
     #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Create ansible directory
       file:
         path: "{{ projects_dir }}/ansible"
@@ -151,10 +179,11 @@
         mode: '0600'
 
 
-    ###################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #         Clone flaskapp GIT repository and related secrets files
     #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Create flaskapp directory
       file:
         path: "{{ projects_dir }}/flaskapp"
@@ -191,23 +220,25 @@
         - "~{{ dev_user }}/Documents/flaskapp/flask/.env"
 
 
-#######################################################################
-#######################################################################
-#######################################################################
+#
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #         Play book for development system worksattion
 #           hosts: devworkstation
 #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om development workstation addons op te tuigen
   hosts: devworkstation
   become: true
 
   tasks:
 
-    ###################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #         Install Sublime Text editor
     #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Add Sublime apt-key
       apt_key:
         url: https://download.sublimetext.com/sublimehq-pub.gpg
