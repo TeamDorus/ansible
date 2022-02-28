@@ -7,8 +7,8 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een development systeem op te tuigen
   hosts:
-    - devserver
-    - devworkstation
+    - devsys
+    - devsys-workstation
   become: true
 
   vars:
@@ -202,7 +202,7 @@
         requirements: "{{ projects_dir }}/flaskapp/flask/requirements.txt"
         virtualenv: "{{ projects_dir }}/flaskapp/flask/venv"
         virtualenv_command: "python3 -m venv"
-        
+
     - name: Clone flaskapp repository
       git:
         repo: git@github.com:TeamDorus/flaskapp.git
@@ -235,7 +235,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om development workstation addons op te tuigen
-  hosts: devworkstation
+  hosts: devsys-workstation
   become: true
 
   tasks:
