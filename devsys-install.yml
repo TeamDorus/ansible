@@ -156,7 +156,7 @@
         clone: true
         update: true
       vars:
-        ansible_become: false   # use private key from {{ dev_user }}
+        ansible_become: false   # clone as {{ dev_user }}
 
     - name: Copy ansible vault secrets.yml
       copy:
@@ -205,7 +205,7 @@
         clone: true
         update: true
       vars:
-        ansible_become: false   # use private key from {{ dev_user }}
+        ansible_become: false   # clone as {{ dev_user }}
 
     - name: Copy .env file with api keys etc
       copy:

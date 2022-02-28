@@ -1,0 +1,11 @@
+---
+plugin: netbox.netbox.nb_inventory
+api_endpoint: http://pindos:8001
+token: "f6bbbd43fac07c4ce23c79d3c95c880fe054c02f"
+validate_certs: false
+config_context: false
+group_by:
+  - device_roles
+  - platforms
+device_query_filters:
+  - has_primary_ip: 'true'
