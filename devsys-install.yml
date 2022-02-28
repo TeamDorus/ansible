@@ -96,6 +96,12 @@
           - ansible
         state: present
 
+    - name: Installeer ansible galaxy collection for netbox
+      command: /usr/bin/ansible-galaxy collection install netbox.netbox
+      vars:
+        ansible_become: false   # install as {{ dev_user }}
+
+
     - name: Installeer ansible test tools and other python modules
       pip:
         name:
