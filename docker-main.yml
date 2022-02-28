@@ -1,15 +1,25 @@
 ---
-
-######################################################################################
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#       Install docker & docker-compose
+#       Install docker & docker-compose and registers system with portainer host
 #
-######################################################################################
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Play to install docker and docker-compose
   hosts:
-    - dockerhosts
-    - portainerhost
+    - tags_docker
   become: true
+
+
+  vars_files:
+    - vars/secrets.yml
+
+  vars:
+    portainer_hostname: pindos
+    portainer_endpoint: "http://{{ portainer_hostname }}:9000/api"
+    endpoints:
+      - {name: "{{ ansible_hostname }}",
+         url: "tcp://{{ ansible_default_ipv4.address }}:2375"}
+
 
   tasks:
     - name: Make sure all packages are up-to-date
@@ -69,11 +79,11 @@
         name: docker-compose
 
 
-    ######################################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
     #       Setup remote docker api for Portainer
     #
-    ######################################################################################
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Create directory for the docker remote api service definition file
       file:
         path: /etc/systemd/system/docker.service.d
@@ -99,28 +109,11 @@
       when: docker_service.changed
 
 
-######################################################################################
-#
-#       Add hosts as endpoints in portainer
-#
-######################################################################################
-- name: Play om een docker hosts als endpoint aan portainer toe te voegen
-  hosts: dockerhosts
-  become: false
-
-  vars_files:
-    - vars/secrets.yml
-
-  vars:
-    portainer_hostname: pindos
-    portainer_endpoint: "http://{{ portainer_hostname }}:9000/api"
-    endpoints:
-      - {name: "{{ ansible_hostname }}",
-         url: "tcp://{{ ansible_default_ipv4.address }}:2375"}
-
-
-  tasks:
-
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #       Add hosts as endpoints in portainer
+    #
+     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Generate authentication token
       uri:
         url: "{{ portainer_endpoint }}/auth"
