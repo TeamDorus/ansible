@@ -7,8 +7,8 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een development systeem op te tuigen
   hosts:
-    - devsys
-    - devsys-workstation
+    - tags_devsys
+    - tags_devsys_workstation
   become: true
 
   vars:
@@ -235,7 +235,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om development workstation addons op te tuigen
-  hosts: devsys-workstation
+  hosts: tags_devsys_workstation
   become: true
 
   tasks:

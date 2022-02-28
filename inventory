@@ -14,23 +14,23 @@ localhost
 
 
 
-[devsys-workstation]
+[tags_devsys_workstation]
 192.168.55.73
 
-[devsys]
+[tags_devsys]
 pindos
 192.168.55.130
 192.168.55.133
 
 
-[docker]
+[tags_docker]
 192.168.55.71
 192.168.55.73
 192.168.55.130
 olympos
 nextcloud
 
-[portainer]
+[tags_portainer]
 pindos
 
 
@@ -44,9 +44,9 @@ traccar
 
 
 [all:children]
-devsys
-devsys-workstation
-docker
-portainer
+tags_devsys
+tags_devsys_workstation
+tags_docker
+tags_portainer
 live
 
