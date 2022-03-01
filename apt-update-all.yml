@@ -1,5 +1,5 @@
 ---
-- name: Playbook om alle systemen te updaten naar de laatste versie van de packages
+- name: Playbook om systemen te updaten naar de laatste versie van de packages
   hosts:
     - tags_pop_os_21_10_impish
     - tags_ubuntu_21_10_impish
