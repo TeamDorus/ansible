@@ -1,0 +1,72 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#           Configure new LXC container
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+- name: Play to configure a new LXC container on Proxmox host
+  hosts: "{{ hostvars['localhost']['lxc_ip_address'] }}"
+  remote_user: "root"
+  gather_facts: false   # wait with gathering facts until host is up and running
+
+  vars_files:
+    - vars/secrets.yml
+
+
+  tasks:
+
+    - name: Wait for container to become reachable
+      wait_for_connection:
+        timeout: 300
+
+
+    - name: Gather facts for first time
+      setup:
+
+
+    - name: Make sure all packages are up-to-date
+      apt:
+        upgrade: dist
+        update_cache: true
+
+
+    - name: Create user 'eric' and add to sudo group
+      user:
+        name: eric
+        password: "{{ lxc_eric_password_hash }}"
+        shell: "/bin/bash"
+        groups: sudo
+        append: true
+
+    - name: Create .ssh directory for eric
+      file:
+        path: "~eric/.ssh"
+        state: directory
+        owner: "eric"
+        group: "eric"
+        mode: g-rwx,o-rwx
+
+    - name: Copy the publickey to '~eric/.ssh/authorized_keys'
+      copy:
+        src: "~/.ssh/authorized_keys"
+        dest: "~eric/.ssh/authorized_keys"
+        owner: "eric"
+        group: "eric"
+        mode: '0600'
+
+
+    - name: Set timezone to Europe/Amsterdam
+      timezone:
+        name: Europe/Amsterdam
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Final action, clear authorized_keys file for user "root"
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Remove authorized_keys file for root
+      file:
+        path: "~/.ssh/authorized_keys"
+        state: absent

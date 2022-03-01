@@ -1,6 +1,10 @@
 ---
 - name: Playbook om alle systemen te updaten naar de laatste versie van de packages
-  hosts: all
+  hosts:
+    - tags_pop_os_21_10_impish
+    - tags_ubuntu_21_10_impish
+    - tags_ubuntu_20_04_focal
+
   become: true
 
   tasks:
