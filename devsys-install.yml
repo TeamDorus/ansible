@@ -197,12 +197,6 @@
         owner: "{{ dev_user }}"
         group: "{{ dev_user }}"
 
-    - name: Create virtual environment for flaskapp
-      pip:
-        requirements: "{{ projects_dir }}/flaskapp/flask/requirements.txt"
-        virtualenv: "{{ projects_dir }}/flaskapp/flask/venv"
-        virtualenv_command: "python3 -m venv"
-
     - name: Clone flaskapp repository
       git:
         repo: git@github.com:TeamDorus/flaskapp.git
@@ -212,6 +206,14 @@
         update: true
       vars:
         ansible_become: false   # clone as {{ dev_user }}
+
+    - name: Create virtual environment for flaskapp
+      pip:
+        requirements: "{{ projects_dir }}/flaskapp/flask/requirements.txt"
+        virtualenv: "{{ projects_dir }}/flaskapp/flask/venv"
+        virtualenv_command: "python3 -m venv"
+      vars:
+        ansible_become: false   # create as {{ dev_user }}
 
     - name: Copy .env file with api keys etc
       copy:
