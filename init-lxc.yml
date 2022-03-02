@@ -6,7 +6,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 - name: Play to configure a new LXC container on Proxmox host
-  hosts: "192.168.55.135"
+  hosts: all
   remote_user: "root"
   gather_facts: false   # wait with gathering facts until host is up and running
 
