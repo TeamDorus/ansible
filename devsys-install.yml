@@ -1,8 +1,7 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#         Generic play book for development system (server & worksattion)
-#           hosts: dev
+#         Generic play book for development system (server & workstation)
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een development systeem op te tuigen
