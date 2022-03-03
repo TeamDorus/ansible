@@ -25,6 +25,11 @@
       setup:
 
 
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Upgrade packages, setup user account " eric" and set timezone
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Make sure all packages are up-to-date
       apt:
         upgrade: dist
@@ -59,6 +64,42 @@
     - name: Set timezone to Europe/Amsterdam
       timezone:
         name: Europe/Amsterdam
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Create DNS host entry in de overrides table of unboud @ pfsense
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Get current hosts
+      uri:
+        url: "{{ pfsense_api_url }}"
+        method: GET
+        headers:
+          Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
+        validate_certs: false
+      register: result
+
+
+    - name: Create a list of current host ip addresses
+      set_fact:
+        addrs: "{{ result | json_query('json.data[*].ip') }}"
+
+
+    - name: Create host entry if the ip address does not yet exist in the list
+      uri:
+        url: "{{ pfsense_api_url }}"
+        method: POST
+        headers:
+          Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
+        validate_certs: false
+        body_format: "json"
+        body:
+          host: "{{ ansible_hostname }}"
+          domain: "bartok.thouars.nl"
+          ip: "{{ ansible_default_ipv4.address }}"
+          apply: true
+      when: ansible_default_ipv4.address not in addrs
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
