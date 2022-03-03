@@ -1,0 +1,38 @@
+---
+- name: test
+  hosts: all
+  gather_facts: true
+
+
+  vars_files:
+    - vars/secrets.yml
+
+  tasks:
+
+    - name: Get current hosts
+      uri:
+        url: "{{ pfsense_api_url }}"
+        method: GET
+        headers:
+          Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
+        validate_certs: false
+      register: result
+
+
+    - name: Find index of ip address of remote host
+      set_fact:
+        index: "{{ lookup('ansible.utils.index_of', result | json_query('json.data[*].ip'), 'eq', ansible_default_ipv4.address) }}"
+
+
+    - name: Delete host entry when it exists
+      uri:
+        url: "{{ pfsense_api_url }}"
+        method: DELETE
+        headers:
+          Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
+        validate_certs: false
+        body_format: "json"
+        body:
+          id: "{{ index | int }}"
+          apply: true
+      when: index != []
