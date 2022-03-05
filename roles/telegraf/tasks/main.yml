@@ -1,0 +1,20 @@
+---
+- name: Create directories
+  file:
+    path: "{{ telegraf_dir }}"
+    state: directory
+
+- name: Create telegraf.conf file from template
+  template:
+    src: "telegraf.conf.j2"
+    dest: "{{ telegraf_dir }}/telegraf.conf"
+
+- name: Copy docker-compose file to remote host
+  copy:
+    src: "docker-compose.yml"
+    dest: "{{ telegraf_dir }}/docker-compose.yml"
+
+- name: Bring up the docker stack
+  docker_compose:
+    project_src: "{{ telegraf_dir }}"
+    state: present

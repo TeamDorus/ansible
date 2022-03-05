@@ -1,0 +1,14 @@
+---
+- name: Playbook to configure the host "testserver1"
+  hosts: testserver1
+
+
+  tasks:
+
+    - include_role:
+        name: docker
+      vars:
+        ansible_become: true   # install as root
+
+    - include_role:
+        name: telegraf

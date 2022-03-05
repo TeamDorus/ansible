@@ -1,0 +1,17 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Install docker & docker-compose and registers system with portainer host
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Play to install docker and docker-compose
+  hosts:
+    - tags_docker
+
+
+  tasks:
+
+    - include_role:
+        name: docker
+      vars:
+        ansible_become: true   # install as root

@@ -1,0 +1,7 @@
+---
+portainer_hostname: "pindos"
+portainer_endpoint: "http://{{ portainer_hostname }}:9000/api"
+endpoints:
+  - {name: "{{ ansible_hostname }}",
+     url: "tcp://{{ ansible_default_ipv4.address }}:2375"}
+docker_user: "eric"

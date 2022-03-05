@@ -11,7 +11,7 @@
   flush_interval = "10s"
   flush_jitter = "0s"
   precision = ""
-  hostname = "@@@@@@hostname"
+  hostname = "{{ ansible_hostname }}"
   #
   # @@ET@@  Nodig wanneer je Telegraf vanuit een docker container start. 
   #         Anders pakt hij de hostname van de container en niet het host systeem.
@@ -27,7 +27,7 @@
 
 # Configuration for sending metrics to InfluxDB
 [[outputs.influxdb]]
-  urls = ["http://192.168.55.10:8086"]
+  urls = ["http://{{ influx_host }}:8086"]
   database = "telegraf"
   retention_policy = ""
   write_consistency = "any"
