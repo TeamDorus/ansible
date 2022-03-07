@@ -12,3 +12,6 @@
 
     - include_role:
         name: dns_entry_delete
+
+    - include_role:
+        name: portainer_endpoint_delete
