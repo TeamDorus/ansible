@@ -16,6 +16,7 @@
       Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
     validate_certs: false
   register: result
+  delegate_to: localhost
 
 
 - name: Find index of ip address of remote host
@@ -35,3 +36,4 @@
       id: "{{ index | int }}"
       apply: true
   when: index != []
+  delegate_to: localhost
