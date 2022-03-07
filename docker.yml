@@ -1,12 +1,13 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#       Install docker & docker-compose and registers system with portainer host
+#       Install docker & docker-compose + register remote host on portainer host
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Play to install docker and docker-compose
   hosts:
     - tags_docker
+    - all
 
 
   tasks:
@@ -15,3 +16,6 @@
         name: docker
       vars:
         ansible_become: true   # install as root
+
+    - include_role:
+        name: portainer_endpoint_create
