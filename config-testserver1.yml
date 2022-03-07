@@ -2,6 +2,10 @@
 - name: Playbook to configure the host "testserver1"
   hosts: testserver1
 
+  # wait with gathering facts until host is up and running
+  # fact gathering will be done in role " basic_lxc"
+  gather_facts: false
+
 
   tasks:
 
@@ -9,6 +13,9 @@
         name: docker
       vars:
         ansible_become: true   # install as root
+
+    - include_role:
+        name: portainer_endpoint_create
 
     - include_role:
         name: telegraf

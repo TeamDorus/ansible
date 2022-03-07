@@ -1,0 +1,14 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Install docker & docker-compose and registers system with portainer host
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Play to install docker and docker-compose
+  hosts: all
+
+
+  tasks:
+
+    - include_role:
+        name: dns_entry_delete
