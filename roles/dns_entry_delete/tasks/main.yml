@@ -1,7 +1,7 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#   Delete DNS host entry in de overrides table of unboud @ pfsense
+#   Delete DNS host entry from the overrides table of unboud @ pfsense
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Load in secrets variables

@@ -1,6 +1,6 @@
 ---
-- name: Playbook to configure the host "testserver1"
-  hosts: testserver1
+- name: Playbook to configure the host "dmzserver1"
+  hosts: dmzserver1
 
   # wait with gathering facts until host is up and running
   # fact gathering will be done in role " basic_lxc"

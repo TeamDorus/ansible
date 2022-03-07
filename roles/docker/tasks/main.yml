@@ -1,4 +1,9 @@
 ---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Install docker & docker-compose
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Make sure all packages are up-to-date
   apt:
     upgrade: dist
@@ -49,10 +54,12 @@
     name: "{{ docker_user }}"
     groups: docker
     append: true
+  register: group
 
 
-- name: Reboot remote server to effectuate the group add
+- name: Reboot remote server when user is added to the group
   reboot:
+  when: group.changed
 
 
 - name: Install docker-compose
@@ -96,57 +103,3 @@
     state: restarted
     daemon_reload: true
   when: docker_service.changed
-
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#
-#       Add remote host as endpoints in portainer
-#
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-- name: Load in secrets variables
-  include_vars: "vars/secrets.yml"
-
-- name: Generate authentication token
-  uri:
-    url: "{{ portainer_endpoint }}/auth"
-    method: POST
-    return_content: true
-    body_format: json
-    body: '{"Username": "{{ portainer_admin_user }}", "Password": "{{ portainer_admin_password }}"}'
-  register: auth_token
-  when: portainer_admin_user and portainer_admin_password is defined
-
-
-- name: Get Endpoints
-  uri:
-    url: "{{ portainer_endpoint }}/endpoints"
-    method: GET
-    return_content: true
-    headers:
-      Authorization: Bearer {{ (auth_token.content|from_json).jwt }}
-  register: portainer_known_endpoints_raw
-
-
-- name: Save endpoints as fact
-  set_fact:
-    portainer_known_endpoints: "{{ portainer_known_endpoints_raw.json | map(attribute='Name') | list }}"
-
-
-# - name: "Show known endpoints"
-#   debug: msg="{{ portainer_known_endpoints }}"
-
-
-- name: Add Endpoints
-  shell: |
-    curl --silent --show-error -o - {{ portainer_endpoint }}/endpoints \
-      -H "Authorization: Bearer {{ (auth_token.content|from_json).jwt }}" \
-      -F "EndpointCreationType=1" \
-      -F "Name={{ item.name }}" \
-      -F "URL={{ item.url }}"
-  args:
-    warn: false
-  with_items:
-    - "{{ endpoints | list }}"
-  when: item.name not in portainer_known_endpoints
-  register: response
-  tags: [skip_ansible_lint]

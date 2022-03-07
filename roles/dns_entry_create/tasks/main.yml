@@ -1,4 +1,9 @@
 ---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Add DNS host entry in de overrides table of unboud @ pfsense
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Load in secrets variables
   include_vars: "vars/secrets.yml"
 
