@@ -33,7 +33,14 @@
     repo: deb https://download.docker.com/linux/ubuntu focal stable
 
 
-- name: Remove AppArmor package since it conflicts with Docker
+- name: Disable AppArmor service since it conflicts with Docker
+  systemd:
+    name: apparmor
+    state: stopped
+    enabled: false
+
+
+- name: Remove AppArmor package
   apt:
     name: apparmor
     state: absent
