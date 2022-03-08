@@ -1,3 +1,0 @@
----
-telegraf_dir: "/opt/docker/telegraf"
-influx_host: "olympos"
