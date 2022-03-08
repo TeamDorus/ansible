@@ -18,4 +18,4 @@
         name: portainer_endpoint_create
 
     - include_role:
-        name: telegraf
+        name: docker_telegraf
