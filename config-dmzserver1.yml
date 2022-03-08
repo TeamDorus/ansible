@@ -15,7 +15,7 @@
         ansible_become: true   # install as root
 
     - include_role:
-        name: portainer_endpoint_create
+        name: config_portainer_endpoint_create
 
     - include_role:
         name: docker_telegraf

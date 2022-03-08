@@ -67,7 +67,7 @@
 
 
     - include_role:
-        name: dns_entry_create
+        name: config_dns_entry_create
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

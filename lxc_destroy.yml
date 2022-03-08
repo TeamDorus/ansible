@@ -11,7 +11,7 @@
   tasks:
 
     - include_role:
-        name: dns_entry_delete
+        name: config_dns_entry_delete
 
     - include_role:
-        name: portainer_endpoint_delete
+        name: config_portainer_endpoint_delete
