@@ -33,19 +33,6 @@
     repo: deb https://download.docker.com/linux/ubuntu focal stable
 
 
-- name: Disable AppArmor service since it conflicts with Docker
-  systemd:
-    name: apparmor
-    state: stopped
-    enabled: false
-
-
-- name: Remove AppArmor package
-  apt:
-    name: apparmor
-    state: absent
-
-
 - name: Install docker
   apt:
     name:
@@ -64,7 +51,7 @@
   register: group
 
 
-- name: Reboot remote server when user is added to the group
+- name: Reboot remote server because user is added to the group
   reboot:
   when: group.changed
 
@@ -80,6 +67,22 @@
     state: directory
     owner: "{{ docker_user }}"
     group: "{{ docker_user }}"
+
+
+# Docker installs apparmor when not present
+# Therefor disable and remove apparmor after installation of docker
+- name: Disable AppArmor service since it conflicts with Docker
+  systemd:
+    name: apparmor
+    state: stopped
+    enabled: false
+
+- name: Remove AppArmor package
+  apt:
+    name: apparmor
+    state: absent
+    purge: true
+    autoremove: true
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
