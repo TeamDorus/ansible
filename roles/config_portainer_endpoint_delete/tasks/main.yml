@@ -1,0 +1,53 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Remove remote host as endpoints from portainer
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in secrets variables
+  include_vars: "vars/secrets.yml"
+
+
+- name: Generate authentication token
+  uri:
+    url: "{{ portainer_endpoint }}/auth"
+    method: POST
+    return_content: true
+    body_format: json
+    body: '{"Username": "{{ portainer_admin_user }}", "Password": "{{ portainer_admin_password }}"}'
+  register: auth_token
+  when: portainer_admin_user and portainer_admin_password is defined
+  delegate_to: localhost
+
+
+- name: Get Endpoints
+  uri:
+    url: "{{ portainer_endpoint }}/endpoints"
+    method: GET
+    return_content: true
+    headers:
+      Authorization: Bearer {{ (auth_token.content|from_json).jwt }}
+  register: known_endpoints_raw
+  delegate_to: localhost
+
+
+- name: Save endpoints as fact
+  set_fact:
+    known_endpoints: "{{ known_endpoints_raw.json | json_query('[*].{Name: Name, Id: Id}') }}"
+
+
+- name: Find our endpoint in the list of known endpoints
+  set_fact:
+    our_endpoint: "{{ known_endpoints | selectattr('Name', '==', endpoint.name) }}"
+
+
+- name: Remove our endpoint
+  uri:
+    url: "{{ portainer_endpoint }}/endpoints/{{ our_endpoint[0].Id }}"
+    method: DELETE
+    headers:
+      Authorization: "Bearer {{ (auth_token.content|from_json).jwt }}"
+    validate_certs: false
+    status_code: 204
+  when: our_endpoint != []
+  delegate_to: localhost

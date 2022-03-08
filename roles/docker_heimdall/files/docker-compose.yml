@@ -1,0 +1,15 @@
+---
+version: "3"
+
+services:
+
+  heimdall:
+    container_name: heimdall
+    image: linuxserver/heimdall
+    restart: unless-stopped
+    ports:
+      - 9999:80
+    volumes:
+      - /opt/docker/heimdall:/config
+    environment:
+      - TZ=Europe/Amsterdam

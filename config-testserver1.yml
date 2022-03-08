@@ -17,11 +17,30 @@
     - include_role:
         name: config_portainer_endpoint_create
 
-    - include_role:
-        name: docker_heimdall
+
+    - name: Start dummy container
+      docker_container:
+        name: dummy
+        image: hello-world
+        state: present
+      ignore_errors: true
+
 
     - name: Reboot remote server
       reboot:
+      vars:
+        ansible_become: true   # reboot as root
+
+
+    - name: Wait for docker service to be up and running
+      wait_for:
+        host: localhost
+        port: 2375
+
+
+    - include_role:
+        name: docker_heimdall
+
 
     - include_role:
         name: docker_telegraf
