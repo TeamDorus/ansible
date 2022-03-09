@@ -1,0 +1,11 @@
+---
+volume_dir: "/opt/docker/nodered"
+
+services:
+  [
+    {
+      name: nodered,
+      port: 1880,
+      protocol: "tcp"
+    }
+  ]

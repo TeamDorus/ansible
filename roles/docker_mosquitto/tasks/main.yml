@@ -5,6 +5,12 @@
     state: directory
 
 
+- name: Copy mosquitto.conf file to remote host
+  copy:
+    src: "mosquitto.conf"
+    dest: "{{ volume_dir }}/mosquitto.conf"
+
+
 - name: Copy docker-compose file to remote host
   copy:
     src: "docker-compose.yml"
@@ -17,6 +23,6 @@
     state: present
 
 
-- name: Add heimdall service to VM config in Netbox
+- name: Add mosquitto service to VM config in Netbox
   include_role:
     name: config_netbox_service_create

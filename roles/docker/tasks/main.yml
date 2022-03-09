@@ -113,3 +113,8 @@
     state: restarted
     daemon_reload: true
   when: docker_service.changed
+
+
+- name: Add docker service to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create

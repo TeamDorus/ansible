@@ -17,6 +17,6 @@
     state: present
 
 
-- name: Add heimdall service to VM config in Netbox
+- name: Add nodered service to VM config in Netbox
   include_role:
     name: config_netbox_service_create

@@ -25,3 +25,11 @@
 
     - include_role:
         name: docker_heimdall
+
+
+    - include_role:
+        name: docker_mosquitto
+
+
+    - include_role:
+        name: docker_nodered

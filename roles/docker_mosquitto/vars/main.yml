@@ -1,0 +1,11 @@
+---
+volume_dir: "/opt/docker/mosquitto"
+
+services:
+  [
+    {
+      name: mosquitto,
+      port: 1883,
+      protocol: "tcp"
+    }
+  ]

@@ -1,2 +1,11 @@
 ---
 docker_user: "eric"
+
+services:
+  [
+    {
+      name: docker,
+      port: 2375,
+      protocol: "tcp"
+    }
+  ]
