@@ -1,0 +1,31 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Add Service entries in Netbox for the VM
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in secrets variables
+  include_vars: "vars/secrets.yml"
+
+
+- name: Get list of services on VM in Netbox
+  set_fact:
+    list: "{{ query('netbox.netbox.nb_lookup', 'services',
+              api_endpoint=netbox_api_url, token=netbox_api_token) |
+              json_query('[*].value.{vm: virtual_machine.name, name: name,
+                                 port: ports[0], protocol: protocol.value}') |
+              selectattr('vm', '==', ansible_hostname) }}"
+
+
+- name: Delete services for VM in Netbox
+  netbox.netbox.netbox_service:
+    netbox_url: "{{ netbox_api_url }}"
+    netbox_token: "{{ netbox_api_token }}"
+    data:
+      virtual_machine: "{{ item.vm }}"
+      name: "{{ item.name }}"
+      port: "{{ item.port | int }}"
+      protocol: "{{ item.protocol }}"
+    state: absent
+  with_items: "{{ list }}"
+  delegate_to: localhost
