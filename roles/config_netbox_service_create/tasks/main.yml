@@ -1,0 +1,22 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Add Service entries in Netbox for the VM
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in secrets variables
+  include_vars: "vars/secrets.yml"
+
+
+- name: Create service entries
+  netbox.netbox.netbox_service:
+    netbox_url: "{{ netbox_api_url }}"
+    netbox_token: "{{ netbox_api_token }}"
+    data:
+      virtual_machine: "{{ ansible_hostname }}"
+      name: "{{ item.name }}"
+      port: "{{ item.port | int }}"
+      protocol: "{{ item.protocol }}"
+    state: present
+  with_items: "{{ services }}"
+  delegate_to: localhost

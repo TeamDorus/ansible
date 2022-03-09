@@ -1,2 +1,11 @@
 ---
 volume_dir: "/opt/docker/heimdall"
+
+services:
+  [
+    {
+      name: heimdall,
+      port: 9999,
+      protocol: "tcp"
+    }
+  ]

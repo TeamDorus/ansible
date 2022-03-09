@@ -15,3 +15,7 @@
   docker_compose:
     project_src: "{{ volume_dir }}"
     state: present
+
+
+- include_role:
+    name: config_netbox_service_create

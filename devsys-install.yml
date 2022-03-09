@@ -113,6 +113,7 @@
           - yamllint
           - ansible-lint
           - proxmoxer
+          - pynetbox
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
