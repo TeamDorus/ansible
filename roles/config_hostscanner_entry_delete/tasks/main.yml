@@ -1,0 +1,23 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Delete entry for remote host in hostscanner config
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in secrets variables
+  include_vars: "vars/secrets.yml"
+
+- lineinfile:
+    path: "{{ hostscanner_config_file }}/{{ hostscanner_config_file }}"
+    line: "{{ ansible_default_ipv4.address }}"
+  register: lineinfile
+  delegate_to: "{{ hostscanner_hostname }}"
+
+- docker_compose:
+    project_src: "{{ hostscanner_config_dir }}"
+    services:
+      - hostscanner
+    state: absent
+    restarted: true
+  when: lineinfile.changed
+  delegate_to: "{{ hostscanner_hostname }}"
