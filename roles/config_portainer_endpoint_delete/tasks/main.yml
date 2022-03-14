@@ -8,6 +8,10 @@
   include_vars: "vars/secrets.yml"
 
 
+- name: Load in portainer variables from create role
+  include_vars: "roles/config_portainer_endpoint_create/vars/main.yml"
+
+
 - name: Generate authentication token
   uri:
     url: "{{ portainer_endpoint }}/auth"
