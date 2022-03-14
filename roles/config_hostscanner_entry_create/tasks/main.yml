@@ -7,11 +7,13 @@
 - name: Load in secrets variables
   include_vars: "vars/secrets.yml"
 
+
 - lineinfile:
-    path: "{{ hostscanner_config_file }}/{{ hostscanner_config_file }}"
+    path: "{{ hostscanner_config_dir }}/{{ hostscanner_config_file }}"
     line: "{{ ansible_default_ipv4.address }}"
   register: lineinfile
   delegate_to: "{{ hostscanner_hostname }}"
+
 
 - docker_compose:
     project_src: "{{ hostscanner_config_dir }}"

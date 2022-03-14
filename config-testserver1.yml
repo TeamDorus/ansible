@@ -24,12 +24,7 @@
 
 
     - include_role:
-        name: docker_heimdall
-
-
-    - include_role:
-        name: docker_mosquitto
-
+        name: docker_hostscanner
 
     - include_role:
-        name: docker_nodered
+        name: config_hostscanner_entry_create
