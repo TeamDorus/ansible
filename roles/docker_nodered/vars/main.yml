@@ -1,7 +1,7 @@
 ---
 volume_dir: "/opt/docker/nodered"
 
-services:
+netbox_services:
   [
     {
       name: nodered,

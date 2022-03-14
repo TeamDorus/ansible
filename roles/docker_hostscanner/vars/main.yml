@@ -1,3 +1,4 @@
 ---
 volume_dir: "/opt/docker/hostscanner"
+hostscanner_host: "olympos"
 influx_host: "pipo"

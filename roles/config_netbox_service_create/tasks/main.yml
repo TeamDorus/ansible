@@ -18,5 +18,5 @@
       port: "{{ item.port | int }}"
       protocol: "{{ item.protocol }}"
     state: present
-  with_items: "{{ services }}"
+  with_items: "{{ netbox_services }}"
   delegate_to: localhost

@@ -1,4 +1,2 @@
 ---
-hostscanner_hostname: "olympos"
-hostscanner_config_dir: "/opt/docker/hostscanner"
 hostscanner_config_file: "telegraf.ip"

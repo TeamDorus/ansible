@@ -7,18 +7,24 @@
 - name: Load in secrets variables
   include_vars: "vars/secrets.yml"
 
+
+- name: Load in hostscanner variables
+  include_vars: "roles/hostscanner/vars/main.yml"
+
+
 - lineinfile:
-    path: "{{ hostscanner_config_dir }}/{{ hostscanner_config_file }}"
+    path: "{{ volume_dir }}/{{ hostscanner_config_file }}"
     line: "{{ ansible_default_ipv4.address }}"
     state: absent
   register: lineinfile
-  delegate_to: "{{ hostscanner_hostname }}"
+  delegate_to: "{{ hostscanner_host }}"
+
 
 - docker_compose:
-    project_src: "{{ hostscanner_config_dir }}"
+    project_src: "{{ volume_dir }}"
     services:
       - hostscanner
     state: present
     restarted: true
   when: lineinfile.changed
-  delegate_to: "{{ hostscanner_hostname }}"
+  delegate_to: "{{ hostscanner_host }}"

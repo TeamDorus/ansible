@@ -1,7 +1,7 @@
 ---
 volume_dir: "/opt/docker/heimdall"
 
-services:
+netbox_services:
   [
     {
       name: heimdall,
