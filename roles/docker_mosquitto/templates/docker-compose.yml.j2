@@ -9,4 +9,4 @@ services:
     restart: unless-stopped
     network_mode: "host"
     volumes:
-      - /opt/docker/mosquitto:/mosquitto/config
+      - "{{ mosquitto_volume_dir }}:/mosquitto/config"

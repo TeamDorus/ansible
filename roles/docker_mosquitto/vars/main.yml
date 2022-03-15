@@ -1,5 +1,5 @@
 ---
-volume_dir: "/opt/docker/mosquitto"
+mosquitto_volume_dir: "/opt/docker/mosquitto"
 
 netbox_services:
   [

@@ -1,0 +1,13 @@
+---
+version: "3"
+
+services:
+
+  acme-dns:
+    container_name: acme-dns
+    image: joohoi/acme-dns
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - "{{ acme_dns_volume_dir }}/config:/etc/acme-dns"
+      - "{{ acme_dns_volume_dir }}/data:/var/lib/acme-dns"

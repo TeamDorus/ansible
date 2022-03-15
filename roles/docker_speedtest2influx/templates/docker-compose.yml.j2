@@ -1,0 +1,14 @@
+---
+version: "3"
+
+services:
+
+  speedtest2influx:
+    container_name: speedtest2influx
+    image: teamdorus/speedtest2influx:0.1.9
+    restart: unless-stopped
+    environment:
+    - "DB_HOST={{ influxdb_host }}:8086"
+    - DB_NAME=speedtest
+    - "CRON=0 1,7,13,19 * * *"
+    - TZ=Europe/Amsterdam

@@ -1,25 +1,25 @@
 ---
-- name: Create directories
+- name: Create directory for persistent volume
   file:
-    path: "{{ volume_dir }}"
+    path: "{{ mosquitto_volume_dir }}"
     state: directory
 
 
 - name: Copy mosquitto.conf file to remote host
   copy:
     src: "mosquitto.conf"
-    dest: "{{ volume_dir }}/mosquitto.conf"
+    dest: "{{ mosquitto_volume_dir }}/mosquitto.conf"
 
 
-- name: Copy docker-compose file to remote host
-  copy:
-    src: "docker-compose.yml"
-    dest: "{{ volume_dir }}/docker-compose.yml"
+- name: Create docker-compose.yml file from template
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ mosquitto_volume_dir }}/docker-compose.yml"
 
 
 - name: Bring up the docker stack
   docker_compose:
-    project_src: "{{ volume_dir }}"
+    project_src: "{{ mosquitto_volume_dir }}"
     state: present
 
 

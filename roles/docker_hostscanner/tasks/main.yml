@@ -1,43 +1,47 @@
 ---
+- name: Load in general docker variables
+  include_vars: "vars/docker_general.yml"
+
+
 - name: Create directory for persistent volume
   file:
-    path: "{{ volume_dir }}"
+    path: "{{ hostscanner_volume_dir }}"
     state: directory
 
 
 - name: Create docker-compose.yml file from template
   template:
     src: "docker-compose.yml.j2"
-    dest: "{{ volume_dir }}/docker-compose.yml"
+    dest: "{{ hostscanner_volume_dir }}/docker-compose.yml"
 
 
 - name: Check whether config file for telegraf dataset exists or not
   stat:
-    path: "/opt/docker/hostscanner/telegraf.ip"
+    path: "{{ hostscanner_volume_dir }}/telegraf.ip"
   register: conf_telegraf
 
 
 - name: Initial copy config file for telegraf dataset to remote host
   copy:
     src: "telegraf.ip"
-    dest: "{{ volume_dir }}/telegraf.ip"
+    dest: "{{ hostscanner_volume_dir }}/telegraf.ip"
   when: conf_telegraf.stat.exists == false
 
 
 - name: Check whether config file for unifi dataset exists or not
   stat:
-    path: "{{ volume_dir }}/unifi.ip"
+    path: "{{ hostscanner_volume_dir }}/unifi.ip"
   register: conf_telegraf
 
 
 - name: Initial copy config file for telegraf dataset to remote host
   copy:
     src: "telegraf.ip"
-    dest: "{{ volume_dir }}/unifi.ip"
+    dest: "{{ hostscanner_volume_dir }}/unifi.ip"
   when: conf_telegraf.stat.exists == false
 
 
 - name: Bring up the docker stack
   docker_compose:
-    project_src: "{{ volume_dir }}"
+    project_src: "{{ hostscanner_volume_dir }}"
     state: present

@@ -1,5 +1,5 @@
 ---
-volume_dir: "/opt/docker/heimdall"
+heimdall_volume_dir: "/opt/docker/heimdall"
 
 netbox_services:
   [

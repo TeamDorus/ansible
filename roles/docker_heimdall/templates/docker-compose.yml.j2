@@ -10,6 +10,6 @@ services:
     ports:
       - 9999:80
     volumes:
-      - /opt/docker/heimdall:/config
+      - "{{ heimdall_volume_dir }}:/config"
     environment:
       - TZ=Europe/Amsterdam

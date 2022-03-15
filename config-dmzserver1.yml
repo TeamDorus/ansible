@@ -19,3 +19,6 @@
 
     - include_role:
         name: docker_telegraf
+
+    - include_role:
+        name: docker_acme_dns

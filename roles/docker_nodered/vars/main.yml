@@ -1,5 +1,5 @@
 ---
-volume_dir: "/opt/docker/nodered"
+nodered_volume_dir: "/opt/docker/nodered"
 
 netbox_services:
   [

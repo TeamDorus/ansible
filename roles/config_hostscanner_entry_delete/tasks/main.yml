@@ -9,22 +9,26 @@
 
 
 - name: Load in hostscanner variables
-  include_vars: "roles/hostscanner/vars/main.yml"
+  include_vars: "roles/docker_hostscanner/vars/main.yml"
+
+
+- name: Load in hostscanner entry create variables
+  include_vars: "roles/config_hostscanner_entry_create/vars/main.yml"
 
 
 - lineinfile:
-    path: "{{ volume_dir }}/{{ hostscanner_config_file }}"
+    path: "{{ hostscanner_volume_dir }}/{{ hostscanner_config_file }}"
     line: "{{ ansible_default_ipv4.address }}"
     state: absent
   register: lineinfile
   delegate_to: "{{ hostscanner_host }}"
 
 
-- docker_compose:
-    project_src: "{{ volume_dir }}"
-    services:
-      - hostscanner
-    state: present
-    restarted: true
-  when: lineinfile.changed
-  delegate_to: "{{ hostscanner_host }}"
+# - docker_compose:
+#    project_src: "{{ hostscanner_volume_dir }}"
+#    services:
+#      - hostscanner
+#    state: present
+#    restarted: true
+#  when: lineinfile.changed
+#  delegate_to: "{{ hostscanner_host }}"

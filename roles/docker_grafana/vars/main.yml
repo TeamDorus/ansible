@@ -1,0 +1,11 @@
+---
+grafana_volume_dir: "/opt/docker/grafana"
+
+netbox_services:
+  [
+    {
+      name: grafana,
+      port: 3000,
+      protocol: "tcp"
+    }
+  ]

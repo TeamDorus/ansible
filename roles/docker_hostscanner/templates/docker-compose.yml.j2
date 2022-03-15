@@ -8,9 +8,9 @@ services:
     image: teamdorus/hostscanner:0.1.1
     restart: unless-stopped
     volumes:
-      - "{{ volume_dir }}:/hostscanner"
+      - "{{ hostscanner_volume_dir }}:/hostscanner"
     environment:
-      - "DB_HOST={{ influx_host }}:8086"
+      - "DB_HOST={{ influxdb_host }}:8086"
       - "DB_NAMES=telegraf unifi"
       - MEASUREMENT=hoststate
       - STATE_TAG=state

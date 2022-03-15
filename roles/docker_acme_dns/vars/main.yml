@@ -1,0 +1,21 @@
+---
+acme_dns_volume_dir: "/opt/docker/acme-dns"
+
+netbox_services:
+  [
+    {
+      name: acme-dns-tcp,
+      port: 53,
+      protocol: "tcp"
+    },
+    {
+      name: acme-dns-api,
+      port: 8000,
+      protocol: "tcp"
+    },
+    {
+      name: acme-dns-udp,
+      port: 53,
+      protocol: "udp"
+    }
+  ]

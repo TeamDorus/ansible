@@ -1,0 +1,11 @@
+---
+influxdb_volume_dir: "/opt/docker/influxdb"
+
+netbox_services:
+  [
+    {
+      name: influxdb,
+      port: 8086,
+      protocol: "tcp"
+    }
+  ]

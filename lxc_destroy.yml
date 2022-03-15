@@ -17,4 +17,7 @@
         name: config_portainer_endpoint_delete
 
     - include_role:
+        name: config_hostscanner_entry_delete
+
+    - include_role:
         name: config_netbox_service_delete_all

@@ -1,3 +1,2 @@
 ---
-volume_dir: "/opt/docker/telegraf"
-influx_host: "olympos"
+telegraf_volume_dir: "/opt/docker/telegraf"

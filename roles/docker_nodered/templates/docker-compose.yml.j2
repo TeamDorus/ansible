@@ -9,4 +9,4 @@ services:
     restart: unless-stopped
     network_mode: "host"
     volumes:
-      - /opt/docker/nodered:/data
+      - "{{ nodered_volume_dir }}:/data"
