@@ -1,0 +1,58 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Backup a docker volume - volume folder is passed as variable "volume_folder"
+#
+#       variable "stop_for_backup" defines whether the contaier is stopped
+#       before making a backup or not
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Ensure that the remote backup folder exists
+  file:
+    path: "{{ remote_backup_folder }}"
+    state: directory
+
+
+- name: Define the backup filename
+  set_fact:
+    backup_file: "{{ volume_folder.split('/') | last }}-{{ ansible_date_time.date }}.tgz"
+
+
+- name: Stop the container (unless told not to "stop_for_backup = false")
+  docker_compose:
+    project_src: "{{ volume_folder }}"
+    state: present
+    stopped: true
+  when: stop_for_backup is undefined or stop_for_backup is true
+
+
+- name: Create backup of the volume directory
+  archive:
+    path: "{{ volume_folder }}"
+    dest: "{{ remote_backup_folder }}/{{ backup_file }}"
+
+
+- name: Start the container (unless container was not stopped)
+  docker_compose:
+    project_src: "{{ volume_folder }}"
+    state: present
+    stopped: false
+  when: stop_for_backup is undefined or stop_for_backup is true
+
+
+- name: Define the local backup folder
+  set_fact:
+    local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
+
+
+- name: Fetch backup from remote host
+  fetch:
+    src: "{{ remote_backup_folder }}/{{ backup_file }}"
+    dest: "{{ local_backup_folder }}/"
+    flat: true
+
+
+- name: Delete backup file on remote host
+  file:
+    path: "{{ remote_backup_folder }}/{{ backup_file }}"
+    state: absent

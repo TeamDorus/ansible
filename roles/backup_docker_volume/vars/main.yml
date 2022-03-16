@@ -1,0 +1,3 @@
+---
+remote_backup_folder: "~/tmp"
+local_backup_root: "~/tmp"
