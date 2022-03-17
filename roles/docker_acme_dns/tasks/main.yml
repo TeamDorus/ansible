@@ -17,11 +17,10 @@
     dest: "{{ acme_dns_volume_dir }}/docker-compose.yml"
 
 
-- name: Create but do not start the docker stack
+- name: Start the docker stack
   docker_compose:
     project_src: "{{ acme_dns_volume_dir }}"
     state: present
-    stopped: true
 
 
 - name: Add acme-dns services to VM config in Netbox

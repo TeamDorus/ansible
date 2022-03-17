@@ -15,8 +15,7 @@
     dest: "{{ speedtest2influx_volume_dir }}/docker-compose.yml"
 
 
-- name: Create but do not start the docker stack
+- name: Start the docker stack
   docker_compose:
     project_src: "{{ speedtest2influx_volume_dir }}"
     state: present
-    stopped: true
