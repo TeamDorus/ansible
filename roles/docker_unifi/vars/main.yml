@@ -1,0 +1,26 @@
+---
+unifi_volume_dir: "/opt/docker/unifi"
+
+netbox_services:
+  [
+    {
+      name: unifi-dev-ctrl,
+      port: 8080,
+      protocol: "tcp"
+    },
+    {
+      name: unifi-webui-api,
+      port: 8443,
+      protocol: "tcp"
+    },
+    {
+      name: unifi-portal-https,
+      port: 8843,
+      protocol: "tcp"
+    },
+    {
+      name: unifi-portal-http,
+      port: 8880,
+      protocol: "tcp"
+    }
+  ]

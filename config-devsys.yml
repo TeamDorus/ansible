@@ -1,0 +1,269 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#         Play book to configuer development systems (server & workstation)
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook om een development systeem op te tuigen
+  hosts:
+    - tags_devsys
+    - tags_devsys_workstation
+  become: true
+
+  vars:
+    - dev_user: "eric"
+
+
+  pre_tasks:
+    - name: Load variable files
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "vars/devsys_{{ ansible_distribution }}.yml"
+        - "vars/devsys_default.yml"
+
+
+  tasks:
+    - name: Make sure all packages are up-to-date
+      apt:
+        upgrade: dist
+        update_cache: true
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Install generic tools
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Installeer algemene (ontwikkel) tools
+      apt:
+        name:
+          - git
+          - tree
+          - python3-pip
+          - python3-venv
+          - cifs-utils
+          - net-tools
+        state: present
+
+    - name: Installeer tools om repositories toe te voegen
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+        state: present
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Install ssh privatekey for dev_user
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Installeer privatekey voor dev_user
+      copy:
+        src: "~{{ dev_user }}/.ssh/id_rsa"
+        dest: "~{{ dev_user }}/.ssh/id_rsa"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0600'
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Install ssh publickey for dev_user
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Installeer privatekey voor dev_user
+      copy:
+        src: "~{{ dev_user }}/.ssh/id_rsa.pub"
+        dest: "~{{ dev_user }}/.ssh/id_rsa.pub"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0644'
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Install ansible & related tools
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Installeer ansible
+      apt:
+        name:
+          - ansible
+        state: present
+
+    - name: Installeer ansible collection for netbox
+      command: /usr/bin/ansible-galaxy collection install netbox.netbox
+      vars:
+        ansible_become: false   # install as {{ dev_user }}
+
+
+    - name: Installeer ansible utils  collection
+      command: /usr/bin/ansible-galaxy collection install ansible.utils
+      vars:
+        ansible_become: false   # install as {{ dev_user }}
+
+
+    - name: Installeer ansible test tools and other python modules
+      pip:
+        name:
+          - yamllint
+          - ansible-lint
+          - proxmoxer
+          - pynetbox
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Install python tools, flask, etc
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Installeer python tools
+      pip:
+        name:
+          - pylint
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Install terraform
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Voeg terraform apt-key toe
+      apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+
+
+    - name: Voeg terraform repo toe
+      apt_repository:
+        repo: deb [arch=amd64] https://apt.releases.hashicorp.com focal main
+
+    - name: Installeer terraform
+      apt:
+        name: terraform
+        state: present
+        update_cache: true
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Clone ansible GIT repository and related secrets files
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Create ansible directory
+      file:
+        path: "{{ projects_dir }}/ansible"
+        state: directory
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+
+    - name: Clone ansible repository
+      git:
+        repo: git@github.com:TeamDorus/ansible.git
+        accept_hostkey: true
+        dest: "{{ projects_dir }}/ansible"
+        clone: true
+        update: true
+      vars:
+        ansible_become: false   # clone as {{ dev_user }}
+
+    - name: Copy ansible vault secrets.yml
+      copy:
+        src: "{{ item }}"
+        dest: "{{ projects_dir }}/ansible/vars/secrets.yml"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
+      with_first_found:
+        - "~{{ dev_user }}/ansible/vars/secrets.yml"
+        - "~{{ dev_user }}/Documents/ansible/vars/secrets.yml"
+
+    - name: Copy ansible vault password file
+      copy:
+        src: "~{{ dev_user }}/.ansible/passwd.txt"
+        dest: "~{{ dev_user }}/.ansible/passwd.txt"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0600'
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Clone flaskapp GIT repository and related secrets files
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Create flaskapp directory
+      file:
+        path: "{{ projects_dir }}/flaskapp"
+        state: directory
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+
+    - name: Clone flaskapp repository
+      git:
+        repo: git@github.com:TeamDorus/flaskapp.git
+        accept_hostkey: true
+        dest: "{{ projects_dir }}/flaskapp"
+        clone: true
+        update: true
+      vars:
+        ansible_become: false   # clone as {{ dev_user }}
+
+    - name: Create virtual environment for flaskapp
+      pip:
+        requirements: "{{ projects_dir }}/flaskapp/flask/requirements.txt"
+        virtualenv: "{{ projects_dir }}/flaskapp/flask/venv"
+        virtualenv_command: "python3 -m venv"
+      vars:
+        ansible_become: false   # create as {{ dev_user }}
+
+    - name: Copy .env file with api keys etc
+      copy:
+        src: "{{ item }}"
+        dest: "{{ projects_dir }}/flaskapp/flask/.env"
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
+      with_first_found:
+        - "~{{ dev_user }}/flaskapp/flask/.env"
+        - "~{{ dev_user }}/Documents/flaskapp/flask/.env"
+
+
+#
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#         Play book for development system worksattion
+#           hosts: devworkstation
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook om development workstation addons op te tuigen
+  hosts: tags_devsys_workstation
+  become: true
+
+  tasks:
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Install Sublime Text editor
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Add Sublime apt-key
+      apt_key:
+        url: https://download.sublimetext.com/sublimehq-pub.gpg
+
+    - name: Add Sublime repository
+      apt_repository:
+        repo: deb https://download.sublimetext.com/ apt/stable/
+
+    - name: Install Sublime
+      apt:
+        name:
+          - sublime-text
+        state: present
+        update_cache: true
