@@ -41,7 +41,8 @@
   when: conf_telegraf.stat.exists == false
 
 
-- name: Bring up the docker stack
+- name: Create but do not start the docker stack
   docker_compose:
     project_src: "{{ hostscanner_volume_dir }}"
     state: present
+    stopped: true

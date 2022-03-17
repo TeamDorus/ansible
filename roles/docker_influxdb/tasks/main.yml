@@ -11,10 +11,11 @@
     dest: "{{ influxdb_volume_dir }}/docker-compose.yml"
 
 
-- name: Bring up the docker stack
+- name: Create but do not start the docker stack
   docker_compose:
     project_src: "{{ influxdb_volume_dir }}"
     state: present
+    stopped: true
 
 
 - name: Add influxdb service to VM config in Netbox
