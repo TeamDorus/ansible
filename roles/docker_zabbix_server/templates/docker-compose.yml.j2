@@ -1,0 +1,46 @@
+---
+version: "3"
+
+services:
+
+  zabbix-server:
+    container_name: zabbix-server-mysql
+    image: zabbix/zabbix-server-mysql
+    restart: unless-stopped
+    ports:
+      - 10051:10051
+    environment:
+      - DB_SERVER_HOST={{ ansible_fqdn }}
+      - MYSQL_DATABASE=zabbix
+      - MYSQL_USER=zabbix
+      - MYSQL_PASSWORD={{ mysql_password }}
+      - MYSQL_ROOT_PASSWORD={{ mysql_root_password }}
+
+
+  zabbix-webui:
+    container_name: zabbix-web-nginx-mysql
+    image: zabbix/zabbix-web-nginx-mysql
+    restart: unless-stopped
+    ports:
+      - 80:8080
+    environment:
+      - DB_SERVER_HOST={{ ansible_fqdn }}
+      - MYSQL_DATABASE=zabbix
+      - MYSQL_USER=zabbix
+      - MYSQL_PASSWORD={{ mysql_password }}
+      - MYSQL_ROOT_PASSWORD={{ mysql_root_password }}
+
+
+
+  zabbix-agent:
+    container_name: zabbix-agent
+    image: zabbix/zabbix-agent
+    restart: unless-stopped
+    environment:
+      - ZBX_HOSTNAME={{ ansible_hostname }}
+      - ZBX_SERVER_HOST={{ zabbix_server }}
+      - ZBX_ACTIVE_ALLOW=false
+      - ZBX_PASSIVE_ALLOW=true
+      - ZBX_PASSIVESERVERS=zabbix-server-mysql
+      - ZBX_DEBUGLEVEL=0
+

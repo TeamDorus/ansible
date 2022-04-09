@@ -1,0 +1,30 @@
+---
+- name: Load in general docker variables
+  include_vars: "vars/docker_general.yml"
+
+
+- name: Load in general secret variables
+  include_vars: "vars/secrets.yml"
+
+
+- name: Create directories
+  file:
+    path: "{{ zabbix_server_volume_dir }}"
+    state: directory
+
+
+- name: Create docker-compose.yml file from template
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ zabbix_server_volume_dir }}/docker-compose.yml"
+
+
+- name: Start the docker stack
+  docker_compose:
+    project_src: "{{ zabbix_server_volume_dir }}"
+    state: present
+
+
+- name: Add zabbix service to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create
