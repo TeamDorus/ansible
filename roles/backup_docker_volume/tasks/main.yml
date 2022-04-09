@@ -30,6 +30,8 @@
   archive:
     path: "{{ volume_folder }}"
     dest: "{{ remote_backup_folder }}/{{ backup_file }}"
+  vars:
+    ansible_become: true   # Execute backup as root to avoid file priviledge issues
 
 
 - name: Start the container (unless container was not stopped)

@@ -1,58 +1,56 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#   Backup a docker volume - volume folder is passed as variable "volume_folder"
-#
-#       variable "stop_for_backup" defines whether the contaier is stopped
-#       before making a backup or not
+#   Restore a docker volume - run with sudo privileges
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-- name: Ensure that the remote backup folder exists
-  file:
-    path: "{{ remote_backup_folder }}"
-    state: directory
+- name: Restore a specific docker volume
 
 
-- name: Define the backup filename
-  set_fact:
-    backup_file: "{{ volume_folder.split('/') | last }}-{{ ansible_date_time.date }}.tgz"
+  ################################################################
+  #
+  #     Adust these variables for each individual restore !!
+  #
+  ################################################################
+
+  hosts: taygetosxx
+  vars:
+    local_backup_file: "~/backup/taygetos/acme-dns-2022-03-17.tgz"
+    volume_folder: "/opt/docker/acme-dns"
 
 
-- name: Stop the container (unless told not to "stop_for_backup = false")
-  docker_compose:
-    project_src: "{{ volume_folder }}"
-    state: present
-    stopped: true
-  when: stop_for_backup is undefined or stop_for_backup is true
+  tasks:
+
+    - name: Check whether docker-compose file for container exists
+      stat:
+        path: "{{ volume_folder }}/docker-compose.yml"
+      register: compose
 
 
-- name: Create backup of the volume directory
-  archive:
-    path: "{{ volume_folder }}"
-    dest: "{{ remote_backup_folder }}/{{ backup_file }}"
+    - name: Stop the container when a docker-compose file exists
+      docker_compose:
+        project_src: "{{ volume_folder }}"
+        state: present
+        stopped: true
+      when: compose.stat.exists is true
 
 
-- name: Start the container (unless container was not stopped)
-  docker_compose:
-    project_src: "{{ volume_folder }}"
-    state: present
-    stopped: false
-  when: stop_for_backup is undefined or stop_for_backup is true
+    - name: Delete the existing volume folder and all its content
+      file:
+        path: "{{ volume_folder }}"
+        state: absent
+      vars:
+        ansible_become: true   # Delete as root to really delete everything
 
 
-- name: Define the local backup folder
-  set_fact:
-    local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
+    - name: Restore the backup to the volume directory
+      unarchive:
+        src: "{{ local_backup_file }}"
+        dest: "{{ volume_folder | dirname }}"
 
 
-- name: Fetch backup from remote host
-  fetch:
-    src: "{{ remote_backup_folder }}/{{ backup_file }}"
-    dest: "{{ local_backup_folder }}/"
-    flat: true
-
-
-- name: Delete backup file on remote host
-  file:
-    path: "{{ remote_backup_folder }}/{{ backup_file }}"
-    state: absent
+    - name: Start the container
+      docker_compose:
+        project_src: "{{ volume_folder }}"
+        state: present
+        stopped: false

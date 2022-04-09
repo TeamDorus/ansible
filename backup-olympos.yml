@@ -1,0 +1,41 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       O L Y M P O S
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup olympos
+  hosts: olympos
+
+  tasks:
+
+    - name: Backup influxdb container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "/opt/docker/influxdb"
+        stop_for_backup: false
+
+
+    - name: Backup grafana container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "/opt/docker/grafana"
+        stop_for_backup: false
+
+
+    - name: Backup heimdall container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "/opt/docker/heimdall"
+        stop_for_backup: false
+
+
+    - name: Backup nodered container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "/opt/docker/nodered"
+        stop_for_backup: false

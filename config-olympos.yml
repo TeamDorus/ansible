@@ -1,11 +1,11 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#       T A Y G E T O S
+#       O L Y M P O S
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-- name: Playbook to configure the host "taygetos"
-  hosts: taygetos
+- name: Playbook to configure the host "olympos"
+  hosts: pindos
 
   # wait with gathering facts until host is up and running
   # fact gathering will be done in role " basic_lxc"
@@ -23,10 +23,28 @@
         name: config_portainer_endpoint_create
 
     - include_role:
-        name: config_hostscanner_entry_create
+        name: docker_influxdb
 
     - include_role:
         name: docker_telegraf
 
     - include_role:
-        name: docker_acme_dns
+        name: docker_grafana
+
+    - include_role:
+        name: docker_hostscanner
+
+    - include_role:
+        name: config_hostscanner_entry_create
+
+    - include_role:
+        name: docker_speedtest2influx
+
+    - include_role:
+        name: docker_heimdall
+
+    - include_role:
+        name: docker_mosquitto
+
+    - include_role:
+        name: docker_nodered

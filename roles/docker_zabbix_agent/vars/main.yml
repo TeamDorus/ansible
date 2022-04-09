@@ -1,2 +1,11 @@
 ---
 zabbix_agent_volume_dir: "/opt/docker/zabbix_agent"
+
+netbox_services:
+  [
+    {
+      name: zabbix,
+      port: 10050,
+      protocol: "tcp"
+    }
+  ]

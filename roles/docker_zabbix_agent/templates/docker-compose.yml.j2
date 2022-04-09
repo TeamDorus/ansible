@@ -4,16 +4,11 @@ version: "3"
 services:
 
   zabbix_agent:
-    container_name: telegraf
-    image: telegraf:1.17.2
+    container_name: zabbix_agent
+    image: zabbix/zabbix-agent:latest
     restart: unless-stopped
-    volumes:
-      - "{{ telegraf_volume_dir }}:/etc/telegraf:ro"
-      - /:/hostfs:ro
+    ports:
+      - 10050:10050
     environment:
-      - HOST_ETC=/hostfs/etc
-      - HOST_PROC=/hostfs/proc
-      - HOST_SYS=/hostfs/sys
-      - HOST_VAR=/hostfs/var
-      - HOST_RUN=/hostfs/run
-      - HOST_MOUNT_PREFIX=/hostfs
+      - ZBX_HOSTNAME={{ ansible_hostname }}
+      - ZBX_SERVER_HOST={{ zabbix_server}}

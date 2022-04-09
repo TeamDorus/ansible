@@ -19,3 +19,8 @@
   docker_compose:
     project_src: "{{ zabbix_agent_volume_dir }}"
     state: present
+
+
+- name: Add zabbix service to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create
