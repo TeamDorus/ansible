@@ -1,0 +1,26 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       P I N D O S
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to configure the host "pindos"
+  hosts: pindos
+
+  # wait with gathering facts until host is up and running
+  # fact gathering will be done in role " basic_lxc"
+  gather_facts: true
+
+
+  tasks:
+
+    #- include_role:
+    #    name: docker
+    #  vars:
+    #    ansible_become: true   # install as root
+
+    #- include_role:
+    #    name: config_portainer_endpoint_create
+
+    - include_role:
+        name: docker_zabbix_agent
