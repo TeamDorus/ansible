@@ -108,7 +108,7 @@
 
 
     - name: Installeer ansible collection for zabbix
-      command: /usr/bin/ansible-galaxy collection install dj-wasabi.zabbix-server
+      command: /usr/bin/ansible-galaxy collection install community.zabbix
       vars:
         ansible_become: false   # install as {{ dev_user }}
 
