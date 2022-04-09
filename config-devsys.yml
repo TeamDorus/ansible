@@ -101,8 +101,14 @@
         ansible_become: false   # install as {{ dev_user }}
 
 
-    - name: Installeer ansible utils  collection
+    - name: Installeer ansible utils collection
       command: /usr/bin/ansible-galaxy collection install ansible.utils
+      vars:
+        ansible_become: false   # install as {{ dev_user }}
+
+
+    - name: Installeer ansible collection for zabbix
+      command: /usr/bin/ansible-galaxy collection install dj-wasabi.zabbix-server
       vars:
         ansible_become: false   # install as {{ dev_user }}
 
