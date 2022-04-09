@@ -23,3 +23,6 @@
 
     - include_role:
         name: docker_telegraf
+
+    - include_role:
+        name: docker_zabbix_server

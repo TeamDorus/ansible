@@ -3,6 +3,10 @@
   include_vars: "vars/docker_general.yml"
 
 
+- name: Load in general secret variables
+  include_vars: "vars/secrets.yml"
+
+
 - name: Create directories
   file:
     path: "{{ zabbix_agent_volume_dir }}"
@@ -24,3 +28,25 @@
 - name: Add zabbix service to VM config in Netbox
   include_role:
     name: config_netbox_service_create
+
+
+- name: Add host to zabbix
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    host_name: "{{ ansible_hostname }}"
+    host_groups:
+      - "Linux servers"
+    link_templates:
+      - "Linux by Zabbix agent"
+    status: enabled
+    state: present
+    inventory_mode: disabled
+    interfaces:
+      - type: agent
+        main: 1
+        useip: 0
+        dns: "{{ ansible_fqdn }}"
+        port: "10050"

@@ -120,6 +120,7 @@
           - ansible-lint
           - proxmoxer
           - pynetbox
+          - zabbix-api
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
