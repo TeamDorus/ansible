@@ -3,12 +3,15 @@ version: "3"
 
 services:
 
-  zabbix_agent:
-    container_name: zabbix_agent
-    image: zabbix/zabbix-agent:latest
+  zabbix-agent:
+    container_name: zabbix-agent
+    image: zabbix/zabbix-agent
     restart: unless-stopped
     ports:
       - 10050:10050
     environment:
       - ZBX_HOSTNAME={{ ansible_hostname }}
-      - ZBX_SERVER_HOST={{ zabbix_server}}
+      - ZBX_SERVER_HOST={{ zabbix_server }}
+      - ZBX_ACTIVE_ALLOW=false
+      - ZBX_PASSIVE_ALLOW=true
+      - ZBX_PASSIVESERVERS={{ zabbix_server }}
