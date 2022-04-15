@@ -130,3 +130,26 @@
         value: "{{ proxmox_zabbix_api_id }}"
       - macro: "{$PVESECRET}"
         value: "{{ proxmox_zabbix_api_token }}"
+
+
+- name: Add pfsense host
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    host_name: "pfsense"
+    host_groups:
+      - "Templates/Operating systems"
+    link_templates:
+      - "Template pfSense Active"
+      - "Template pfSense Active IPsec"
+    status: enabled
+    state: present
+    inventory_mode: disabled
+    interfaces:
+      - type: agent
+        main: 1
+        useip: 0
+        dns: "pfsense.bartok.thouars.nl"
+        port: "10050"
