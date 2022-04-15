@@ -36,7 +36,7 @@
 
 - name: Initial copy config file for telegraf dataset to remote host
   copy:
-    src: "telegraf.ip"
+    src: "unifi.ip"
     dest: "{{ hostscanner_volume_dir }}/unifi.ip"
   when: conf_telegraf.stat.exists == false
 
