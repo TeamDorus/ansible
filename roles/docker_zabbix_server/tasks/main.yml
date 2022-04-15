@@ -40,10 +40,47 @@
     host_groups:
       - "Ping only hosts"
       - "Raspberry Pi"
-      - "LXC containers"
 
 
-- name: Add ping-only hosts to zabbix
+# - - - - - - - - - - - - - - - - - - - - - - - -
+#
+# Import templates
+#
+- name: Import proxmox template
+  local_action:
+    module: community.zabbix.zabbix_template
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    template_xml: "{{ lookup('file', 'zabbix-pve-api.xml') }}"
+    state: present
+
+
+- name: Import pfsense active template
+  local_action:
+    module: community.zabbix.zabbix_template
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    template_xml: "{{ lookup('file', 'template_pfsense_active.xml') }}"
+    state: present
+
+
+- name: Import pfsense active IPSec template
+  local_action:
+    module: community.zabbix.zabbix_template
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    template_xml: "{{ lookup('file', 'template_pfsense_active_ipsec.xml') }}"
+    state: present
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - -
+#
+# Add hosts
+#
+- name: Add ping-only hosts
   local_action:
     module: community.zabbix.zabbix_host
     server_url: "http://{{ zabbix_server }}"
@@ -64,3 +101,32 @@
         ip: "{{ item.ip }}"
         port: "10050"
   with_items: "{{ ping_hosts }}"
+
+
+- name: Add proxmox host
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    host_name: "hm80"
+    host_groups:
+      - "PVE Node"
+    link_templates:
+      - "Template pve api datacenter"
+    status: enabled
+    state: present
+    inventory_mode: disabled
+    interfaces:
+      - type: agent
+        main: 1
+        useip: 1
+        ip: "127.0.0.1"
+        port: "10050"
+    macros:
+      - macro: "{$PVESERVER}"
+        value: "hm80.bartok.thouars.nl"
+      - macro: "{$PVETOKENID}"
+        value: "{{ proxmox_zabbix_api_id }}"
+      - macro: "{$PVESECRET}"
+        value: "{{ proxmox_zabbix_api_token }}"
