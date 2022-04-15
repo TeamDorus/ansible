@@ -1,0 +1,38 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Add Hosts and Hostgroups to Zabbix for the VM
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in secrets variables
+  include_vars: "vars/secrets.yml"
+
+
+- name: Ensure that host groups are present
+  local_action:
+    module: community.zabbix.zabbix_group
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    state: present
+    host_groups: "{{ zabbix_host_groups }}"
+
+
+- name: Add host to zabbix
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    host_name: "{{ ansible_hostname }}"
+    host_groups: "{{ zabbix_host_groups }}"
+    link_templates: "{{ zabbix_templates }}"
+    status: enabled
+    state: present
+    inventory_mode: disabled
+    interfaces:
+      - type: agent
+        main: 1
+        useip: 0
+        dns: "{{ ansible_fqdn }}"
+        port: "10050"

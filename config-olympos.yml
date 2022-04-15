@@ -5,11 +5,19 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to configure the host "olympos"
-  hosts: pindos
-
-  # wait with gathering facts until host is up and running
-  # fact gathering will be done in role " basic_lxc"
+  hosts: olympos
   gather_facts: true
+
+
+  vars:
+    - zabbix_host_groups:
+        - "Linux servers"
+        - "Ping only hosts"
+        - "LXC containers"
+
+    - zabbix_templates:
+        - "ICMP Ping"
+        - "Linux by Zabbix agent"
 
 
   tasks:
@@ -27,6 +35,9 @@
 
     - include_role:
         name: docker_telegraf
+
+    - include_role:
+        name: docker_zabbix_agent
 
     - include_role:
         name: docker_grafana

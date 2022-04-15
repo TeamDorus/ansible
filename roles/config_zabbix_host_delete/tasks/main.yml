@@ -1,0 +1,18 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Add Hosts and Hostgroups to Zabbix for the VM
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in secrets variables
+  include_vars: "vars/secrets.yml"
+
+
+- name: Add host to zabbix
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    host_name: "{{ ansible_hostname }}"
+    state: absent

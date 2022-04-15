@@ -14,3 +14,23 @@ netbox_services:
       protocol: "tcp"
     }
   ]
+
+ping_hosts:
+  [
+    {
+      name: ap-meterkast,
+      ip: 192.168.55.200
+    },
+    {
+      name: ap-zolder,
+      ip: 192.168.55.201
+    },
+    {
+      name: ap-woonkamer,
+      ip: 192.168.55.202
+    },
+    {
+      name: ap-kamer-eric,
+      ip: 192.168.55.203
+    }
+  ]

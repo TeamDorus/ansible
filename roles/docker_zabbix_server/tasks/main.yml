@@ -28,3 +28,39 @@
 - name: Add zabbix service to VM config in Netbox
   include_role:
     name: config_netbox_service_create
+
+
+- name: Create host groups
+  local_action:
+    module: community.zabbix.zabbix_group
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    state: present
+    host_groups:
+      - "Ping only hosts"
+      - "Raspberry Pi"
+      - "LXC containers"
+
+
+- name: Add ping-only hosts to zabbix
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    host_name: "{{ item.name }}"
+    host_groups:
+      - "Ping only hosts"
+    link_templates:
+      - "ICMP Ping"
+    status: enabled
+    state: present
+    inventory_mode: disabled
+    interfaces:
+      - type: agent
+        main: 1
+        useip: 1
+        ip: "{{ item.ip }}"
+        port: "10050"
+  with_items: "{{ ping_hosts }}"

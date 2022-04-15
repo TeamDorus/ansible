@@ -15,6 +15,7 @@ services:
       - MYSQL_USER=zabbix
       - MYSQL_PASSWORD={{ mysql_password }}
       - MYSQL_ROOT_PASSWORD={{ mysql_root_password }}
+      - TZ=Europe/Amsterdam
 
 
   zabbix-webui:
@@ -29,6 +30,7 @@ services:
       - MYSQL_USER=zabbix
       - MYSQL_PASSWORD={{ mysql_password }}
       - MYSQL_ROOT_PASSWORD={{ mysql_root_password }}
+      - TZ=Europe/Amsterdam
 
 
 
@@ -43,4 +45,5 @@ services:
       - ZBX_PASSIVE_ALLOW=true
       - ZBX_PASSIVESERVERS=zabbix-server-mysql
       - ZBX_DEBUGLEVEL=0
+      - TZ=Europe/Amsterdam
 
