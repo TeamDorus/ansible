@@ -1,6 +1,6 @@
 ---
 zabbix_server_volume_dir: "/opt/docker/zabbix_server"
-zabbix_server: "testserver1.bartok.thouars.nl"
+zabbix_server: "zabbix.bartok.thouars.nl"
 
 zabbix_mysql_user: "zabbix"
 zabbix_mysql_database: "zabbix"

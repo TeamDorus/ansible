@@ -30,6 +30,19 @@
     name: config_netbox_service_create
 
 
+# - - - - - - - - - - - - - - - - - - - - - - - -
+#
+# First execution of the playbook will lead to an error.
+# Manual login to the zabbix server is required to finish the zabbix setup
+# After that, restart this playbook
+#
+# To do: automate this step :)
+#
+- name: Message for first time execution
+  debug:
+    msg: "On the first run the playbook will stop here. Log in to the zabbix server and then restart the playbook"
+
+
 - name: Create host groups
   local_action:
     module: community.zabbix.zabbix_group
@@ -40,6 +53,18 @@
     host_groups:
       - "Ping only hosts"
       - "Raspberry Pi"
+
+
+- name: Set Admin user timezone
+  local_action:
+    module: community.zabbix.zabbix_user
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    alias: "Admin"
+    usrgrps:
+      - "Zabbix administrators"
+    timezone: "Europe/Amsterdam"
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
