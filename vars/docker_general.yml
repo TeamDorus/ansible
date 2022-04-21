@@ -1,4 +1,3 @@
 ---
 influxdb_host: "olympos"
 
-zabbix_server: "testserver1.bartok.thouars.nl"

@@ -10,11 +10,12 @@ services:
     ports:
       - 10051:10051
     environment:
-      - DB_SERVER_HOST={{ ansible_fqdn }}
-      - MYSQL_DATABASE=zabbix
-      - MYSQL_USER=zabbix
-      - MYSQL_PASSWORD={{ mysql_password }}
-      - MYSQL_ROOT_PASSWORD={{ mysql_root_password }}
+      - DB_SERVER_HOST=zabbix-database-mysql
+      - MYSQL_DATABASE={{ zabbix_mysql_database }}
+      - MYSQL_USER={{ zabbix_mysql_user }}
+      - MYSQL_PASSWORD={{ zabbix_mysql_password }}
+      - MYSQL_ROOT_PASSWORD={{ zabbix_mysql_root_password }}
+      - ZBX_NODEADDRESS={{ ansible_fqdn }}
       - TZ=Europe/Amsterdam
 
 
@@ -25,13 +26,27 @@ services:
     ports:
       - 80:8080
     environment:
-      - DB_SERVER_HOST={{ ansible_fqdn }}
-      - MYSQL_DATABASE=zabbix
-      - MYSQL_USER=zabbix
-      - MYSQL_PASSWORD={{ mysql_password }}
-      - MYSQL_ROOT_PASSWORD={{ mysql_root_password }}
+      - DB_SERVER_HOST=zabbix-database-mysql
+      - MYSQL_DATABASE={{ zabbix_mysql_database }}
+      - MYSQL_USER={{ zabbix_mysql_user }}
+      - MYSQL_PASSWORD={{ zabbix_mysql_password }}
+      - MYSQL_ROOT_PASSWORD={{ zabbix_mysql_root_password }}
       - TZ=Europe/Amsterdam
 
+
+  zabbix-database:
+    container_name: zabbix-database-mysql
+    image: mysql
+    command: --character-set-server=utf8 --collation-server=utf8_bin --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE={{ zabbix_mysql_database }}
+      - MYSQL_USER={{ zabbix_mysql_user }}
+      - MYSQL_PASSWORD={{ zabbix_mysql_password }}
+      - MYSQL_ROOT_PASSWORD={{ zabbix_mysql_root_password }}
+      - TZ=Europe/Amsterdam
+    security_opt:
+      - seccomp:unconfined
 
 
   zabbix-agent:

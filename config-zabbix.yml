@@ -1,0 +1,25 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Z A B B I X
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to configure the host "zabbix"
+  hosts: zabbix
+  gather_facts: true
+
+
+  tasks:
+
+    - include_role:
+        name: docker
+      vars:
+        ansible_become: true   # install as root
+
+
+    - include_role:
+        name: config_portainer_endpoint_create
+
+
+    - include_role:
+        name: docker_zabbix_server

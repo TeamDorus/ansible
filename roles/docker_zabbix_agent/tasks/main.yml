@@ -1,6 +1,6 @@
 ---
 - name: Load in general docker variables
-  include_vars: "vars/docker_general.yml"
+  include_vars: "roles/docker_zabbix_server/vars/main.yml"
 
 
 - name: Load in general secret variables
