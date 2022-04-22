@@ -8,31 +8,18 @@
   hosts: pindos
   gather_facts: true
 
-
-  vars:
-    - zabbix_host_groups:
-        - "Linux servers"
-        - "Ping only hosts"
-        - "LXC containers"
-
-    - zabbix_templates:
-        - "ICMP Ping"
-        - "Linux by Zabbix agent"
-
-
   tasks:
 
-    #- include_role:
-    #    name: docker
-    #  vars:
-    #    ansible_become: true   # install as root
+    - include_role:
+        name: docker
+      vars:
+        ansible_become: true   # install as root
 
-    #- include_role:
-    #    name: config_portainer_endpoint_create
 
     - include_role:
         name: config_dns_entry_create
 
 
     - include_role:
-        name: docker_zabbix_agent
+        name: docker_portainer
+

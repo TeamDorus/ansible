@@ -1,0 +1,23 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       P I N D O S
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup pindos
+  hosts: pindos
+
+  vars_files:
+    - vars/backup.yml
+    - roles/docker_portainer/vars/main.yml
+
+
+  tasks:
+
+    - name: Backup portainer container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "{{ portainer_volume_dir }}"
+        stop_for_backup: true
+        compose_folder: "{{ portainer_volume_dir }}"

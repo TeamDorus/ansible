@@ -1,0 +1,11 @@
+---
+unifi_volume_dir: "/opt/docker/portainer"
+
+netbox_services:
+  [
+    {
+      name: portainer-ui,
+      port: 9000,
+      protocol: "tcp"
+    }
+  ]
