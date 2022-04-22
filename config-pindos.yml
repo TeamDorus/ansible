@@ -21,5 +21,8 @@
 
 
     - include_role:
-        name: docker_portainer
+        name: docker_telegraf
 
+
+    - include_role:
+        name: docker_portainer
