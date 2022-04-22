@@ -7,11 +7,17 @@
 - name: Playbook to backup taygetos
   hosts: taygetos
 
+  vars_files:
+    - vars/backup.yml
+    - roles/docker_acme_dns/vars/main.yml
+
+
   tasks:
 
     - name: Backup acme-dns container
       include_role:
         name: backup_docker_volume
       vars:
-        volume_folder: "/opt/docker/acme-dns"
+        volume_folder: "{{ acme_dns_volume_dir }}"
         stop_for_backup: true
+        compose_folder: "{{ acme_dns_volume_dir }}"
