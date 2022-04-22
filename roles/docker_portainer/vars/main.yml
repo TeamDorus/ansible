@@ -1,5 +1,5 @@
 ---
-unifi_volume_dir: "/opt/docker/portainer"
+portainer_volume_dir: "/opt/docker/portainer"
 
 netbox_services:
   [

@@ -1,7 +1,7 @@
 ---
 - name: Create directory for persistent volume
   file:
-    path: "{{ portainer_volume_dir }}"
+    path: "{{ portainer_volume_dir }}/data"
     state: directory
 
 
