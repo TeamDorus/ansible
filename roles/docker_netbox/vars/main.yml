@@ -1,0 +1,16 @@
+---
+netbox_volume_dir: "/opt/docker/netbox"
+postgres_dir: "{{ netbox_volume_dir }}/postgres-data"
+redis_dir: "{{ netbox_volume_dir }}/redis-data"
+media_dir: "{{ netbox_volume_dir }}/media-files"
+netbox_docker_dir: "~/netbox-docker"
+
+
+netbox_services:
+  [
+    {
+      name: netbox-ui,
+      port: 80,
+      protocol: "tcp"
+    }
+  ]

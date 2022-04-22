@@ -1,0 +1,24 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       N E T B O X
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup netbox
+  hosts: pindos
+
+
+  vars_files:
+    - vars/backup.yml
+    - roles/docker_netbox/vars/main.yml
+
+
+  tasks:
+
+    - name: Backup netbox container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "{{ netbox_volume_dir }}"
+        stop_for_backup: true
+        compose_folder: "/home/eric/docker/netbox-docker"
