@@ -1,0 +1,22 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Z A B B I X
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup zabbix
+  hosts: zabbix
+
+  vars_files:
+    - vars/secrets.yml
+
+
+  tasks:
+
+    - name: Backup zabbix mysql database
+      include_role:
+        name: backup_mysql_db
+      vars:
+        db_container: "zabbix-database-mysql"
+        db_backup_name: "zabbix"
+        db_rootpass: "{{ zabbix_mysql_root_password }}"

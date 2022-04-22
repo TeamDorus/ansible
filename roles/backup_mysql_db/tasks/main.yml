@@ -1,0 +1,46 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Make a dump of a mysql database running in a container
+#
+#     - container name is passed as variable "db_container"
+#     - backup name is passed as variable "db_backup_name"
+#     - database root password is passed as variable "db_rootpass"
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in general backup variables
+  include_vars: "vars/backup.yml"
+
+
+- name: Ensure that the remote backup folder exists
+  file:
+    path: "{{ remote_backup_folder }}"
+    state: directory
+
+
+- name: Define the backup filename
+  set_fact:
+    backup_file: "{{ db_backup_name }}-{{ ansible_date_time.date }}.sql.gz"
+
+
+- name: Make backup in the mysql container using a docker exec command
+  shell:
+    cmd: docker exec {{ db_container }} sh -c 'exec mysqldump --all-databases -uroot -p"{{ db_rootpass }}"' | gzip > {{ remote_backup_folder }}/{{ backup_file }}
+
+
+- name: Define the local backup folder
+  set_fact:
+    local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
+
+
+- name: Fetch backup from remote host
+  fetch:
+    src: "{{ remote_backup_folder }}/{{ backup_file }}"
+    dest: "{{ local_backup_folder }}/"
+    flat: true
+
+
+- name: Delete backup file on remote host
+  file:
+    path: "{{ remote_backup_folder }}/{{ backup_file }}"
+    state: absent

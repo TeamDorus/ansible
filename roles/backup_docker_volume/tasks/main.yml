@@ -7,6 +7,10 @@
 #       before making a backup or not
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in general backup variables
+  include_vars: "vars/backup.yml"
+
+
 - name: Ensure that the remote backup folder exists
   file:
     path: "{{ remote_backup_folder }}"
