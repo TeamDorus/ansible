@@ -1,0 +1,33 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       U N I F I
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup unifi
+  hosts: unifi
+
+  vars_files:
+    - vars/backup.yml
+    - roles/docker_unifi/vars/main.yml
+
+
+  tasks:
+
+    - name: Define the local backup folder
+      set_fact:
+        local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
+
+
+    - name: Get list of backup files
+      find:
+        paths: "{{ unifi_volume_dir }}/data/backup/autobackup/"
+      register: files2fetch
+
+    - name: Fetch backup from remote host
+      fetch:
+        src: "{{ item.path }}"
+        dest: "{{ local_backup_folder }}/"
+        flat: true
+      with_items: "{{ files2fetch.files }}"
+

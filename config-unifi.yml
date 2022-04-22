@@ -29,7 +29,4 @@
         name: docker_telegraf
 
     - include_role:
-        name: docker_zabbix_agent
-
-    - include_role:
         name: docker_unifi
