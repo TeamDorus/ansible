@@ -30,4 +30,3 @@
         dest: "{{ local_backup_folder }}/"
         flat: true
       with_items: "{{ files2fetch.files }}"
-
