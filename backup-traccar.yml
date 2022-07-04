@@ -25,6 +25,15 @@
         backup_file: "traccar-{{ ansible_date_time.date }}.tgz"
 
 
+    - name: Stop the traccar service
+      systemd:
+        name: traccar
+        state: stopped
+        enabled: true
+      vars:
+        ansible_become: true   # perform as root
+
+
     - name: Create backup
       archive:
         path: "{{ traccar_dir }}/*"
@@ -37,6 +46,15 @@
           - "{{ traccar_dir }}/templates"
           - "{{ traccar_dir }}/tracker-server.jar"
           - "{{ traccar_dir }}/web"
+
+
+    - name: Start the traccar service again
+      systemd:
+        name: traccar
+        state: started
+        enabled: true
+      vars:
+        ansible_become: true   # perform as root
 
 
     - name: Define the local backup folder

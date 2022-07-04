@@ -8,26 +8,50 @@
 
 
 - name: Download traccar installation file
-  url:
-    src: "https://github.com/traccar/traccar/releases/download/v5.0/traccar-linux-64-5.0.zip"
+  get_url:
+    url: "https://github.com/traccar/traccar/releases/download/v5.0/traccar-linux-64-5.0.zip"
     dest: "{{ traccar_download_dir }}"
+  register: download
   vars:
     ansible_become: true   # perform as root
+
+   
+- name: Make sure the unzip command is installed
+  apt:
+    name: unzip
+    state: present
+  when: download.changed | bool
+  vars:
+    ansible_become: true   # perform as root
+
 
 - name: Extract installation file
   unarchive:
+    remote_src: true
     src: "{{ traccar_download_dir }}/traccar-linux-64-5.0.zip"
     dest: "{{ traccar_download_dir }}"
+  when: download.changed | bool
   vars:
     ansible_become: true   # perform as root
 
 
-#- name: Start the traccar service
-#  docker_compose:
-#    project_src: "{{ unifi_volume_dir }}"
-#    state: present
+- name: Install the traccar software
+  command: "{{ traccar_download_dir }}/traccar.run"
+  when: download.changed | bool
+  vars:
+    ansible_become: true   # perform as root
+
+
+- name: Make sure the traccar service is running
+  systemd:
+    name: traccar
+    state: started
+    enabled: true
+  vars:
+    ansible_become: true   # perform as root
 
 
 - name: Add traccar services to VM config in Netbox
   include_role:
     name: config_netbox_service_create
+  when: download.changed | bool
