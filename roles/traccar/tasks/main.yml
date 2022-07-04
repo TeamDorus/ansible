@@ -1,0 +1,33 @@
+---
+- name: Create temporary directory for download
+  file:
+    path: "{{ traccar_download_dir }}"
+    state: directory
+  vars:
+    ansible_become: true   # perform as root
+
+
+- name: Download traccar installation file
+  url:
+    src: "https://github.com/traccar/traccar/releases/download/v5.0/traccar-linux-64-5.0.zip"
+    dest: "{{ traccar_download_dir }}"
+  vars:
+    ansible_become: true   # perform as root
+
+- name: Extract installation file
+  unarchive:
+    src: "{{ traccar_download_dir }}/traccar-linux-64-5.0.zip"
+    dest: "{{ traccar_download_dir }}"
+  vars:
+    ansible_become: true   # perform as root
+
+
+#- name: Start the traccar service
+#  docker_compose:
+#    project_src: "{{ unifi_volume_dir }}"
+#    state: present
+
+
+- name: Add traccar services to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create

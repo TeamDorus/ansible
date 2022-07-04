@@ -1,0 +1,57 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       T R A C C A R
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup traccar
+  hosts: traccar
+
+  vars_files:
+    - vars/backup.yml
+    - roles/traccar/vars/main.yml
+
+
+  tasks:
+
+    - name: Ensure that the remote backup folder exists
+      file:
+        path: "{{ remote_backup_folder }}"
+        state: directory
+
+
+    - name: Define the backup filename
+      set_fact:
+        backup_file: "traccar-{{ ansible_date_time.date }}.tgz"
+
+
+    - name: Create backup
+      archive:
+        path: "{{ traccar_dir }}/*"
+        dest: "{{ remote_backup_folder }}/{{ backup_file }}"
+        exclude_path:
+          - "{{ traccar_dir }}/jre"
+          - "{{ traccar_dir }}/lib"
+          - "{{ traccar_dir }}/logs"
+          - "{{ traccar_dir }}/schema"
+          - "{{ traccar_dir }}/templates"
+          - "{{ traccar_dir }}/tracker-server.jar"
+          - "{{ traccar_dir }}/web"
+
+
+    - name: Define the local backup folder
+      set_fact:
+        local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
+
+
+    - name: Fetch backup from remote host
+      fetch:
+        src: "{{ remote_backup_folder }}/{{ backup_file }}"
+        dest: "{{ local_backup_folder }}/"
+        flat: true
+
+
+    - name: Delete backup file on remote host
+      file:
+        path: "{{ remote_backup_folder }}/{{ backup_file }}"
+        state: absent
