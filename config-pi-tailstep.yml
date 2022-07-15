@@ -1,0 +1,102 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#         Play book to configure Raspberry Pi as Tailscale Steppingstone into
+#         another network
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook om een Raspberry Pi als Tailscale Steppingstone te configureren
+  hosts:
+    - Pi4_Tailstep
+  become: true
+
+
+  vars_files:
+    - vars/secrets.yml
+
+  vars_prompt:
+    - name: authkey
+      prompt: "Enter the pre-authorzed key for this machine (<Enter> to skip initialization)"
+      private: no
+
+
+  tasks:
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Upgrade packages, set timezone and activate VNC server
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Make sure all packages are up-to-date
+      apt:
+        upgrade: dist
+        update_cache: true
+
+
+    - name: Set timezone to Europe/Amsterdam
+      timezone:
+        name: Europe/Amsterdam
+
+
+    - name: Make sure VNC server is started
+      systemd:
+        name: vncserver-x11-serviced
+        enabled: true
+        state: started
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Install Tailscale
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Install prerequisites
+      apt:
+        name:
+          - apt-transport-https
+          - gnupg2
+          - gnupg-agent
+          - python3-apt
+        state: present
+
+
+    - name: Add tailscale apt-key
+      apt_key:
+        url: https://pkgs.tailscale.com/stable/raspbian/bullseye.noarmor.gpg
+
+
+    - name: Add tailscale repo
+      apt_repository:
+        repo: deb https://pkgs.tailscale.com/stable/raspbian bullseye main
+
+
+    - name: Install tailscale
+      apt:
+        name:
+          - tailscale
+        state: present
+        update_cache: true
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Initialize Tailscale
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Initialise Tailscale with pre-authorized key
+      command: "tailscale up --authkey={{ authkey }}"
+      when: authkey != ""
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Show Tailscale status
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Get Tailscale status
+      command: "tailscale status"
+      register: tailscale_state
+
+    - name: Toon Tailscale status
+      debug:
+        var: tailscale_state.stdout_lines
