@@ -4,6 +4,9 @@
 #         Play book to configure Raspberry Pi as Tailscale Steppingstone into
 #         another network
 #
+#   Let op: playbook aanroepen met argument --ask-pass omdat de public key van
+#           user "eric" nog niet bekend is.
+#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een Raspberry Pi als Tailscale Steppingstone te configureren
   hosts:
@@ -24,9 +27,18 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #   Upgrade packages, set timezone and activate VNC server
+    #   Initialize the Pi
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Ensure public key is in users .ssh/authorized_keys
+      authorized_key:
+        user: "{{ ansible_user }}"
+        state: present
+        key: "{{ item }}"
+      with_file:
+        - ~/.ssh/id_rsa.pub
+
+
     - name: Make sure all packages are up-to-date
       apt:
         upgrade: dist
@@ -38,11 +50,17 @@
         name: Europe/Amsterdam
 
 
-    - name: Make sure VNC server is started
-      systemd:
-        name: vncserver-x11-serviced
-        enabled: true
-        state: started
+    - name: Disable "glamor" to enhance VNC on a headless system
+      replace:
+        path: /usr/lib/systemd/scripts/glamor_test.sh
+        regexp: 'if ! raspi-config nonint is_pifour && raspi-config nonint is_kms ; then'
+        replace: 'if true ; then'
+      register: glamor
+
+
+    - name: Reboot remote server when glamor file has been changed
+      reboot:
+      when: glamor.changed
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -88,15 +106,134 @@
       when: authkey != ""
 
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #
-    #   Show Tailscale status
-    #
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Get Tailscale status
       command: "tailscale status"
       register: tailscale_state
 
-    - name: Toon Tailscale status
+    - name: Show Tailscale status
       debug:
         var: tailscale_state.stdout_lines
+
+
+    - name: Get Tailscale ip address
+      command: "tailscale ip --4"
+      register: tailscale_ipv4
+
+    - name: Show Tailscale ip address
+      debug:
+        var: tailscale_ipv4.stdout
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Add DNS entry for tailscale ip address
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Get current hosts @ pfsense
+      uri:
+        url: "{{ pfsense_api_url }}"
+        method: GET
+        headers:
+          Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
+        validate_certs: false
+      register: result
+      delegate_to: localhost
+      vars:
+        ansible_become: false   # execute as {{ ansible_user }}
+
+
+    - name: Create a list of current host ip addresses @ pfsense
+      set_fact:
+        addrs: "{{ result | json_query('json.data[*].ip') }}"
+      vars:
+        ansible_become: false   # execute as {{ ansible_user }}
+
+
+    - name: Create host entry if the ip address does not yet exist in the list
+      uri:
+        url: "{{ pfsense_api_url }}"
+        method: POST
+        headers:
+          Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
+        validate_certs: false
+        body_format: "json"
+        body:
+          host: "{{ ansible_hostname }}"
+          domain: "bartok.thouars.nl"
+          ip: "{{ tailscale_ipv4.stdout }}"
+          apply: true
+      when: tailscale_ipv4.stdout not in addrs
+      delegate_to: localhost
+      vars:
+        ansible_become: false   # execute as {{ ansible_user }}
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Add Netbox entries for tailscale interface and ip address
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Create tailscale interface
+      netbox.netbox.netbox_device_interface:
+        netbox_url: "{{ netbox_api_url }}"
+        netbox_token: "{{ netbox_api_token }}"
+        data:
+          device: "{{ inventory_hostname }}"
+          name: "tailscale0"
+          type: "Virtual"
+        state: present
+      delegate_to: localhost
+      vars:
+        ansible_become: false   # execute as {{ ansible_user }}
+
+
+    - name: Add tailscale ip address to tailscale interface
+      netbox.netbox.netbox_ip_address:
+        netbox_url: "{{ netbox_api_url }}"
+        netbox_token: "{{ netbox_api_token }}"
+        data:
+          address: "{{ tailscale_ipv4.stdout }}"
+          assigned_object:
+            name: "tailscale0"
+            device: "{{ inventory_hostname }}"
+          description: "Tailscale - {{ inventory_hostname }}"
+          dns_name: "{{ ansible_hostname }}"
+        state: present
+      delegate_to: localhost
+      vars:
+        ansible_become: false   # execute as {{ ansible_user }}
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Start the VNC server for remote desktop
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Make sure VNC server is started
+      systemd:
+        name: vncserver-x11-serviced
+        enabled: true
+        state: started
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Configure system monitoring
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Load in hostscanner variables
+      include_vars: "roles/docker_hostscanner/vars/main.yml"
+    - name: Load in hostscanner config file variables
+      include_vars: "roles/config_hostscanner_entry_create/vars/main.yml"
+
+
+    - name: Add Tailscale ip address to hostscanner config file
+      lineinfile:
+        path: "{{ hostscanner_volume_dir }}/{{ hostscanner_config_file }}"
+        line: "{{ tailscale_ipv4.stdout }}"
+      register: lineinfile
+      delegate_to: "{{ hostscanner_host }}"
+
+
+    - include_role:
+        name: pi_telegraf
