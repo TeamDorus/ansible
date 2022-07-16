@@ -10,9 +10,6 @@
     - tags_devsys_workstation
   become: true
 
-  vars:
-    - dev_user: "eric"
-
 
   pre_tasks:
     - name: Load variable files
@@ -58,30 +55,34 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #         Install ssh privatekey for dev_user
+    #         Install keys for ansible_user
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Installeer privatekey voor dev_user
+    - name: Installeer privatekey voor ansible_user
       copy:
-        src: "~{{ dev_user }}/.ssh/id_rsa"
-        dest: "~{{ dev_user }}/.ssh/id_rsa"
-        owner: "{{ dev_user }}"
-        group: "{{ dev_user }}"
+        src: "~{{ ansible_user }}/.ssh/id_rsa"
+        dest: "~{{ ansible_user }}/.ssh/id_rsa"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0600'
 
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #
-    #         Install ssh publickey for dev_user
-    #
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Installeer privatekey voor dev_user
+    - name: Installeer privatekey voor ansible_user
       copy:
-        src: "~{{ dev_user }}/.ssh/id_rsa.pub"
-        dest: "~{{ dev_user }}/.ssh/id_rsa.pub"
-        owner: "{{ dev_user }}"
-        group: "{{ dev_user }}"
+        src: "~{{ ansible_user }}/.ssh/id_rsa.pub"
+        dest: "~{{ ansible_user }}/.ssh/id_rsa.pub"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0644'
+
+
+    - name: Ensure public key is in users .ssh/authorized_keys
+      authorized_key:
+        user: "{{ ansible_user }}"
+        state: present
+        key: "{{ item }}"
+      with_file:
+        - ~/.ssh/id_rsa.pub
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -93,24 +94,25 @@
       apt:
         name:
           - ansible
+          - sshpass             # in case you want to use password based ssh login
         state: present
 
     - name: Installeer ansible collection for netbox
       command: /usr/bin/ansible-galaxy collection install netbox.netbox
       vars:
-        ansible_become: false   # install as {{ dev_user }}
+        ansible_become: false   # install as {{ ansible_user }}
 
 
     - name: Installeer ansible utils collection
       command: /usr/bin/ansible-galaxy collection install ansible.utils
       vars:
-        ansible_become: false   # install as {{ dev_user }}
+        ansible_become: false   # install as {{ ansible_user }}
 
 
     - name: Installeer ansible collection for zabbix
       command: /usr/bin/ansible-galaxy collection install community.zabbix
       vars:
-        ansible_become: false   # install as {{ dev_user }}
+        ansible_become: false   # install as {{ ansible_user }}
 
 
     - name: Installeer ansible test tools and other python modules
@@ -164,8 +166,8 @@
       file:
         path: "{{ projects_dir }}/ansible"
         state: directory
-        owner: "{{ dev_user }}"
-        group: "{{ dev_user }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
 
     - name: Clone ansible repository
       git:
@@ -175,26 +177,26 @@
         clone: true
         update: true
       vars:
-        ansible_become: false   # clone as {{ dev_user }}
+        ansible_become: false   # clone as {{ ansible_user }}
 
     - name: Copy ansible vault secrets.yml
       copy:
         src: "{{ item }}"
         dest: "{{ projects_dir }}/ansible/vars/secrets.yml"
-        owner: "{{ dev_user }}"
-        group: "{{ dev_user }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0600'
         decrypt: false          # do not decrypt the vault file
       with_first_found:
-        - "~{{ dev_user }}/ansible/vars/secrets.yml"
-        - "~{{ dev_user }}/Documents/ansible/vars/secrets.yml"
+        - "~{{ ansible_user }}/ansible/vars/secrets.yml"
+        - "~{{ ansible_user }}/Documents/ansible/vars/secrets.yml"
 
     - name: Copy ansible vault password file
       copy:
-        src: "~{{ dev_user }}/.ansible/passwd.txt"
-        dest: "~{{ dev_user }}/.ansible/passwd.txt"
-        owner: "{{ dev_user }}"
-        group: "{{ dev_user }}"
+        src: "~{{ ansible_user }}/.ansible/passwd.txt"
+        dest: "~{{ ansible_user }}/.ansible/passwd.txt"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0600'
 
 
@@ -207,8 +209,8 @@
       file:
         path: "{{ projects_dir }}/flaskapp"
         state: directory
-        owner: "{{ dev_user }}"
-        group: "{{ dev_user }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
 
     - name: Clone flaskapp repository
       git:
@@ -218,7 +220,7 @@
         clone: true
         update: true
       vars:
-        ansible_become: false   # clone as {{ dev_user }}
+        ansible_become: false   # clone as {{ ansible_user }}
 
     - name: Create virtual environment for flaskapp
       pip:
@@ -226,19 +228,19 @@
         virtualenv: "{{ projects_dir }}/flaskapp/flask/venv"
         virtualenv_command: "python3 -m venv"
       vars:
-        ansible_become: false   # create as {{ dev_user }}
+        ansible_become: false   # create as {{ ansible_user }}
 
     - name: Copy .env file with api keys etc
       copy:
         src: "{{ item }}"
         dest: "{{ projects_dir }}/flaskapp/flask/.env"
-        owner: "{{ dev_user }}"
-        group: "{{ dev_user }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0600'
         decrypt: false          # do not decrypt the vault file
       with_first_found:
-        - "~{{ dev_user }}/flaskapp/flask/.env"
-        - "~{{ dev_user }}/Documents/flaskapp/flask/.env"
+        - "~{{ ansible_user }}/flaskapp/flask/.env"
+        - "~{{ ansible_user }}/Documents/flaskapp/flask/.env"
 
 
 #
