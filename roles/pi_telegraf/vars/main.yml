@@ -1,0 +1,2 @@
+---
+influxdb_host: "192.168.55.10"  # TailStep needs ip address instead of hostname
