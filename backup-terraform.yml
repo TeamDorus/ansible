@@ -33,7 +33,6 @@
       archive:
         path:
           - "{{ state_dir }}/*/terraform*"
-          - "{{ state_dir }}/*/.terraform.*"
         dest: "{{ remote_backup_folder }}/{{ backup_file }}"
 
 
