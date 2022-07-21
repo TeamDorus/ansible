@@ -5,7 +5,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to backup netbox
-  hosts: pindos
+  hosts: netbox
 
 
   vars_files:
@@ -21,4 +21,4 @@
       vars:
         volume_folder: "{{ netbox_volume_dir }}"
         stop_for_backup: true
-        compose_folder: "/home/eric/docker/netbox-docker"
+        compose_folder: "{{ netbox_docker_dir }}"
