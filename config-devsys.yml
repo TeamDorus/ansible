@@ -40,6 +40,7 @@
           - python3-venv
           - cifs-utils
           - net-tools
+          - wireguard
         state: present
 
     - name: Installeer tools om repositories toe te voegen

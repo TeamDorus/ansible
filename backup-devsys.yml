@@ -1,0 +1,39 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       D E V S Y S
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup all secrets related files on devsys workstation
+  hosts:
+    - tags_devsys_workstation
+
+
+  vars_files:
+    - vars/backup.yml
+
+
+  tasks:
+
+    - name: Define the local backup folder
+      set_fact:
+        local_backup_folder: "{{ local_backup_root }}/"
+
+
+    - name: Make list of files to backup
+      set_fact:
+        files2fetch:
+          - "~{{ ansible_user }}/.ssh/id_rsa"
+          - "~{{ ansible_user }}/.ssh/id_rsa.pub"
+          - "~{{ ansible_user }}/.ansible/passwd.txt"
+          - "~{{ ansible_user }}/Documents/ansible/vars/secrets.yml"
+          - "~{{ ansible_user }}/Documents/terraform/secret_vars_api"
+          - "~{{ ansible_user }}/Documents/terraform/secret_vars_pw"
+          - "~{{ ansible_user }}/Documents/flaskapp/flask/.env"
+
+
+    - name: Fetch files to backup from remote host
+      fetch:
+        src: "{{ item }}"
+        dest: "{{ local_backup_folder }}/"
+      with_items: "{{ files2fetch }}"
