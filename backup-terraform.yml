@@ -5,7 +5,8 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to backup terrafrom state files from development system
-  hosts: Pop_OS_1
+  hosts:
+    - tags_devsys_workstation
 
   vars_files:
     - vars/backup.yml
