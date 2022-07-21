@@ -15,14 +15,20 @@
 
   tasks:
 
-    - name: Define the local backup folder
-      set_fact:
-        local_backup_folder: "{{ local_backup_root }}/"
+    - name: Ensure that the remote backup folder exists
+      file:
+        path: "{{ remote_backup_folder }}"
+        state: directory
 
 
-    - name: Make list of files to backup
+    - name: Define the backup filename
       set_fact:
-        files2fetch:
+        backup_file: "devsys-secrets-{{ ansible_date_time.date }}.tgz"
+
+
+    - name: Create backup
+      archive:
+        path:
           - "~{{ ansible_user }}/.ssh/id_rsa"
           - "~{{ ansible_user }}/.ssh/id_rsa.pub"
           - "~{{ ansible_user }}/.ansible/passwd.txt"
@@ -30,10 +36,22 @@
           - "~{{ ansible_user }}/Documents/terraform/secret_vars_api"
           - "~{{ ansible_user }}/Documents/terraform/secret_vars_pw"
           - "~{{ ansible_user }}/Documents/flaskapp/flask/.env"
+        dest: "{{ remote_backup_folder }}/{{ backup_file }}"
 
 
-    - name: Fetch files to backup from remote host
+    - name: Define the local backup folder
+      set_fact:
+        local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
+
+
+    - name: Fetch backup from remote host
       fetch:
-        src: "{{ item }}"
+        src: "{{ remote_backup_folder }}/{{ backup_file }}"
         dest: "{{ local_backup_folder }}/"
-      with_items: "{{ files2fetch }}"
+        flat: true
+
+
+    - name: Delete backup file on remote host
+      file:
+        path: "{{ remote_backup_folder }}/{{ backup_file }}"
+        state: absent
