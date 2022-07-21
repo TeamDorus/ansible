@@ -189,6 +189,53 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
+    #         Clone terraform GIT repository and related secrets files
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Create terraform directory
+      file:
+        path: "{{ projects_dir }}/terraform"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Clone terraform repository
+      git:
+        repo: git@github.com:TeamDorus/terraform.git
+        accept_hostkey: true
+        dest: "{{ projects_dir }}/terraform"
+        clone: true
+        update: true
+      vars:
+        ansible_become: false   # clone as {{ ansible_user }}
+
+    - name: Copy terraform secrets pw
+      copy:
+        src: "{{ item }}"
+        dest: "{{ projects_dir }}/terraform/secret_vars_pw"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
+      with_first_found:
+        - "~{{ devuser }}/terraform/secret_vars_pw"
+        - "~{{ devuser }}/Documents/terraform/secret_vars_pw"
+
+    - name: Copy terraform secrets api
+      copy:
+        src: "{{ item }}"
+        dest: "{{ projects_dir }}/terraform/secret_vars_api"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
+      with_first_found:
+        - "~{{ devuser }}/terraform/secret_vars_api"
+        - "~{{ devuser }}/Documents/terraform/secret_vars_api"
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
     #         Clone flaskapp GIT repository and related secrets files
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
