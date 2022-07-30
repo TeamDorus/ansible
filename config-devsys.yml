@@ -131,7 +131,7 @@
 
     - name: Voeg terraform repo toe
       apt_repository:
-        repo: deb [arch=amd64] https://apt.releases.hashicorp.com focal main
+        repo: deb [arch=amd64] https://apt.releases.hashicorp.com jammy main
 
     - name: Installeer terraform
       apt:
