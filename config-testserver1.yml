@@ -7,28 +7,27 @@
   gather_facts: true
 
   vars:
-    netbox_services: [{name: hiephoi, port: 909, protocol: "tcp"}]
+    netbox_services: [{name: checkmk webui, port: 8000, protocol: "tcp"}]
 
 
   tasks:
 
-#    - include_role:
-#        name: docker
-#      vars:
-#        ansible_become: true   # install as root
+    - include_role:
+        name: docker
+      vars:
+        ansible_become: true   # install as root
 
 
-#    - include_role:
-#        name: config_portainer_endpoint_create
+    - include_role:
+        name: config_portainer_endpoint_create
 
-#    - include_role:
-#        name: config_hostscanner_entry_create
+    - include_role:
+        name: config_hostscanner_entry_create
 
-#    - include_role:
-#        name: docker_telegraf
+    - include_role:
+        name: docker_telegraf
 
-#    - include_role:
-#        name: docker_zabbix_server
+
 
     - include_role:
         name: config_netbox_service_create
