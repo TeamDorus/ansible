@@ -91,13 +91,13 @@
     state: present
 
 
-- name: Import pfsense active IPSec template
+- name: Import Synology template
   local_action:
     module: community.zabbix.zabbix_template
     server_url: "http://{{ zabbix_server }}"
     login_user: "Admin"
     login_password: "{{ zabbix_password }}"
-    template_xml: "{{ lookup('file', 'template_pfsense_active_ipsec.xml') }}"
+    template_xml: "{{ lookup('file', 'template_synology_diskstation.yaml') }}"
     state: present
 
 
@@ -178,3 +178,26 @@
         useip: 0
         dns: "pfsense.bartok.thouars.nl"
         port: "10050"
+
+
+- name: Add Synology DS218 host
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "http://{{ zabbix_server }}"
+    login_user: "Admin"
+    login_password: "{{ zabbix_password }}"
+    host_name: "DS218"
+    host_groups:
+      - "Templates"
+    link_templates:
+      - "Synology DiskStation"
+    status: enabled
+    state: present
+    inventory_mode: disabled
+    interfaces:
+      - type: snmp
+        main: 1
+        useip: 0
+        dns: "ds218.bartok.thouars.nl"
+        port: "161"
+

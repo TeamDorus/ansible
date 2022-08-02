@@ -599,7 +599,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                     </preprocessing>
                 </item>
                 <item>
-                    <name>CPU $2 time</name>
+                    <name>CPU idle time</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.cpu.util[,idle]</key>
                     <value_type>FLOAT</value_type>
@@ -612,7 +612,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                     </applications>
                 </item>
                 <item>
-                    <name>CPU $2 time</name>
+                    <name>CPU interrupt time</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.cpu.util[,interrupt]</key>
                     <value_type>FLOAT</value_type>
@@ -625,7 +625,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                     </applications>
                 </item>
                 <item>
-                    <name>CPU $2 time</name>
+                    <name>CPU nice time</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.cpu.util[,nice]</key>
                     <value_type>FLOAT</value_type>
@@ -638,7 +638,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                     </applications>
                 </item>
                 <item>
-                    <name>CPU $2 time</name>
+                    <name>CPU system time</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.cpu.util[,system]</key>
                     <value_type>FLOAT</value_type>
@@ -651,7 +651,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                     </applications>
                 </item>
                 <item>
-                    <name>CPU $2 time</name>
+                    <name>CPU user time</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.cpu.util[,user]</key>
                     <value_type>FLOAT</value_type>
@@ -984,7 +984,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                     <description>Gateway Discovery</description>
                     <item_prototypes>
                         <item_prototype>
-                            <name>Gateway $2 RTT</name>
+                            <name>Gateway ${#GATEWAY} RTT</name>
                             <type>ZABBIX_ACTIVE</type>
                             <key>pfsense.value[gw_value,{#GATEWAY},delay]</key>
                             <delay>60s</delay>
@@ -1003,7 +1003,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                             </preprocessing>
                         </item_prototype>
                         <item_prototype>
-                            <name>Gateway $2 Packet  Loss</name>
+                            <name>Gateway ${#GATEWAY} Packet  Loss</name>
                             <type>ZABBIX_ACTIVE</type>
                             <key>pfsense.value[gw_value,{#GATEWAY},loss]</key>
                             <delay>60s</delay>
@@ -1021,7 +1021,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                             </preprocessing>
                         </item_prototype>
                         <item_prototype>
-                            <name>Gateway $2 Status</name>
+                            <name>Gateway ${#GATEWAY} Status</name>
                             <type>ZABBIX_ACTIVE</type>
                             <key>pfsense.value[gw_value,{#GATEWAY},status]</key>
                             <delay>60s</delay>
@@ -1068,7 +1068,7 @@ https://github.com/rbicelli/pfsense-zabbix-template</description>
                             </trigger_prototypes>
                         </item_prototype>
                         <item_prototype>
-                            <name>Gateway $2 RTT Std Deviation</name>
+                            <name>Gateway ${#GATEWAY} RTT Std Deviation</name>
                             <type>ZABBIX_ACTIVE</type>
                             <key>pfsense.value[gw_value,{#GATEWAY},stddev]</key>
                             <delay>60s</delay>
