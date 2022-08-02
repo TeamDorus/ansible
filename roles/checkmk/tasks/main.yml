@@ -1,0 +1,29 @@
+---
+- name: Create temporary directory for download
+  file:
+    path: "{{ checkmk_download_dir }}"
+    state: directory
+
+
+- name: Download checkmk package file
+  get_url:
+    url: https://download.checkmk.com/checkmk/2.1.0p9/check-mk-raw-2.1.0p9_0.jammy_amd64.deb
+    dest: "{{ checkmk_download_dir }}"
+  register: download
+
+   
+- name: Add the checkmk apt-key
+  apt_key:
+    url: https://download.checkmk.com/checkmk/Check_MK-pubkey.gpg
+
+
+- name: Install checkmk
+  apt:
+    deb: "{{ checkmk_download_dir }}/check-mk-raw-2.1.0p9_0.jammy_amd64.deb"
+    state: present
+
+
+- name: Add checkmk webUI service to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create
+  when: download.changed | bool

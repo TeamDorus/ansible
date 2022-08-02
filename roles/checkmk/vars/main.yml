@@ -1,0 +1,11 @@
+---
+checkmk_download_dir: "/root/download"
+
+netbox_services:
+  [
+    {
+      name: web-ui,
+      port: 8000,
+      protocol: "tcp"
+    }
+  ]

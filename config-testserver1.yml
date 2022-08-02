@@ -6,28 +6,31 @@
   # fact gathering will be done in role " basic_lxc"
   gather_facts: true
 
-  vars:
-    netbox_services: [{name: checkmk webui, port: 8000, protocol: "tcp"}]
+#  vars:
+#    netbox_services: [{name: checkmk webui, port: 8000, protocol: "tcp"}]
 
+  become: true
 
   tasks:
 
-    - include_role:
-        name: docker
-      vars:
-        ansible_become: true   # install as root
+#    - include_role:
+#        name: docker
+#      vars:
+#        ansible_become: true   # install as root
 
 
-    - include_role:
-        name: config_portainer_endpoint_create
+#    - include_role:
+#        name: config_portainer_endpoint_create
+
+#    - include_role:
+#        name: docker_telegraf
+
+#    - include_role:
+#        name: config_netbox_service_create
+
 
     - include_role:
         name: config_hostscanner_entry_create
 
     - include_role:
-        name: docker_telegraf
-
-
-
-    - include_role:
-        name: config_netbox_service_create
+        name: checkmk
