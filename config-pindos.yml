@@ -17,10 +17,6 @@
 
 
     - include_role:
-        name: config_dns_entry_create
-
-
-    - include_role:
         name: docker_telegraf
 
 
