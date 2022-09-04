@@ -41,6 +41,9 @@
           - cifs-utils
           - net-tools
           - wireguard
+          - snmp
+          - snmp-mibs-downloader
+          - unzip
         state: present
 
     - name: Installeer tools om repositories toe te voegen
@@ -52,6 +55,34 @@
           - gnupg-agent
           - software-properties-common
         state: present
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Download and install synology MIB files
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Download Synology MIB file
+      get_url:
+        url: "https://global.download.synology.com/download/Document/Software/DeveloperGuide/Firmware/DSM/All/enu/Synology_MIB_File.zip"
+        dest: "/root"
+      register: download_MIB
+
+       
+    - name: Extract MIB file to root folder
+      unarchive:
+        remote_src: true
+        src: "~/Synology_MIB_File.zip"
+        dest: "/root"
+      when: download_MIB.changed | bool
+
+
+    - name: Copy MIB files to correct folder
+      copy: 
+        remote_src: true
+        src: "/root/Synology_MIB_File/"
+        dest: "/usr/share/snmp/mibs"
+      when: download_MIB.changed | bool
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
