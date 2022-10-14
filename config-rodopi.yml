@@ -1,12 +1,13 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#       P I N D O S
+#       R O D O P I
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-- name: Playbook to configure the host "pindos"
-  hosts: pindos
+- name: Playbook to configure the host "rodopi"
+  hosts: rodopi
   gather_facts: true
+
 
   tasks:
 
@@ -17,10 +18,16 @@
 
 
     - include_role:
-        name: docker_telegraf
+        name: config_portainer_endpoint_create
+
 
     - include_role:
         name: config_hostscanner_entry_create
 
+
     - include_role:
-        name: docker_portainer
+        name: docker_mosquitto
+
+
+    - include_role:
+        name: docker_nodered
