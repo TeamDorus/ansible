@@ -34,12 +34,6 @@
         name: docker_influxdb
 
     - include_role:
-        name: docker_telegraf
-
-    - include_role:
-        name: docker_zabbix_agent
-
-    - include_role:
         name: docker_grafana
 
     - include_role:
@@ -54,8 +48,3 @@
     - include_role:
         name: docker_heimdall
 
-    - include_role:
-        name: docker_mosquitto
-
-    - include_role:
-        name: docker_nodered
