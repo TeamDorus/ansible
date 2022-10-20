@@ -173,6 +173,15 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
+    #         Install docker and docker-compose
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - include_role:
+        name: docker
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
     #         Clone ansible GIT repository and related secrets files
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -306,6 +315,29 @@
       with_first_found:
         - "~{{ devuser }}/flaskapp/flask/.env"
         - "~{{ devuser }}/Documents/flaskapp/flask/.env"
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         Clone docker GIT repository
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Create docker directory
+      file:
+        path: "{{ projects_dir }}/docker"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Clone docker repository
+      git:
+        repo: git@github.com:TeamDorus/docker.git
+        accept_hostkey: true
+        dest: "{{ projects_dir }}/docker"
+        clone: true
+        update: true
+      vars:
+        ansible_become: false   # clone as {{ ansible_user }}
 
 
 #
