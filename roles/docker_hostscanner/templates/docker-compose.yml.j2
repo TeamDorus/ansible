@@ -5,13 +5,15 @@ services:
 
   hostscanner:
     container_name: hostscanner
-    image: teamdorus/hostscanner:0.1.1
+    image: teamdorus/hostscanner:0.1.2
     restart: unless-stopped
     volumes:
       - "{{ hostscanner_volume_dir }}:/hostscanner"
     environment:
       - "DB_HOST={{ influxdb_host }}:8086"
       - "DB_NAMES=telegraf unifi"
+      - "DB_USER=V1_Client"
+      - "DB_PASSWORD=V1_Client"
       - MEASUREMENT=hoststate
       - STATE_TAG=state
       - TZ=Europe/Amsterdam
