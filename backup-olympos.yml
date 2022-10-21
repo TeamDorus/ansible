@@ -17,6 +17,14 @@
         stop_for_backup: true
 
 
+    - name: Backup hostscanner container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "/opt/docker/hostscanner"
+        stop_for_backup: false
+
+
     - name: Backup grafana container
       include_role:
         name: backup_docker_volume
