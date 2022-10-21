@@ -1,0 +1,73 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Restore a dump of a mysql database running in a container
+#
+#     - container name is passed as variable "db_container"
+#     - local backup file is passed as variable "local_backup_file"
+#     - database root password is passed as variable "db_rootpass"
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Load in general backup variables
+  include_vars: "vars/backup.yml"
+
+
+- name: Ensure that the remote folder to send the restore file to exists
+  file:
+    path: "{{ remote_backup_folder }}"
+    state: directory
+
+
+- name: Upload the file to restore
+  copy:
+    src: "{{ local_backup_file }}/"
+    dest: "{{ remote_backup_folder }}/{{ local_backup_file | basename }}"
+
+
+- name: Unzip the file to restore
+  shell:
+    cmd: gunzip "{{ remote_backup_folder }}/{{ local_backup_file | basename }}"
+
+
+- name: Stop the other Zabbix containers
+  docker_compose:
+    project_src: "/opt/docker/zabbix_server"
+    state: present
+    stopped: true
+    services:
+      - "zabbix-server"
+      - "zabbix-webui"
+      - "zabbix-agent"
+
+
+- name: Drop the current zabbix database in the mysql container using a docker exec command
+  shell:
+    cmd: echo "DROP DATABASE zabbix;\n" | docker exec -i zabbix-database-mysql mysql -uroot -p"{{ db_rootpass }}"
+
+
+- name: Create a new zabbix database in the mysql container using a docker exec command
+  shell:
+    cmd: echo "CREATE DATABASE zabbix;\n" | docker exec -i zabbix-database-mysql mysql -uroot -p"{{ db_rootpass }}"
+
+
+- name: Restore the zabbix database from backup file in the mysql container using a docker exec command
+  shell:
+    cmd: cat "{{ remote_backup_folder }}/{{ local_backup_file | basename | splitext | first }}" | docker exec -i {{ db_container }} mysql -uroot -p"{{ db_rootpass }}" zabbix
+
+
+- name: Restart the other Zabbix containers
+  docker_compose:
+    project_src: "/opt/docker/zabbix_server"
+    state: present
+    stopped: false
+    services:
+      - "zabbix-server"
+      - "zabbix-webui"
+      - "zabbix-agent"
+
+
+#- name: Delete backup file on remote host
+#  file:
+#    path: "{{ remote_backup_folder }}/{{ local_backup_file | basename }}"
+#    state: absent
+
