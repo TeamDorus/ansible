@@ -34,6 +34,9 @@
         name: docker_influxdb
 
     - include_role:
+        name: docker_telegraf
+
+    - include_role:
         name: docker_grafana
 
     - include_role:
@@ -41,9 +44,6 @@
 
     - include_role:
         name: config_hostscanner_entry_create
-
-    - include_role:
-        name: docker_speedtest2influx
 
     - include_role:
         name: docker_heimdall

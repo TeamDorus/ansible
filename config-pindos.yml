@@ -17,9 +17,6 @@
 
 
     - include_role:
-        name: docker_telegraf
-
-    - include_role:
         name: config_hostscanner_entry_create
 
     - include_role:
