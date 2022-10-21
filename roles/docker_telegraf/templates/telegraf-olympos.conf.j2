@@ -1,0 +1,179 @@
+# Telegraf Configuration
+#
+
+# Configuration for telegraf agent on olympos
+[agent]
+  interval = "60s"
+  round_interval = true
+  metric_batch_size = 1000
+  metric_buffer_limit = 10000
+  collection_jitter = "0s"
+  flush_interval = "10s"
+  flush_jitter = "0s"
+  precision = ""
+  hostname = "{{ ansible_hostname }}"
+  #
+  # @@ET@@  Nodig wanneer je Telegraf vanuit een docker container start. 
+  #         Anders pakt hij de hostname van de container en niet het host systeem.
+  #
+  ## If set to true, do no set the "host" tag in the telegraf agent.
+  omit_hostname = false
+
+
+###############################################################################
+#                            OUTPUT PLUGINS                                   #
+###############################################################################
+
+
+# Configuration for sending metrics to InfluxDB
+[[outputs.influxdb]]
+  urls = ["http://{{ influxdb_host }}:8086"]
+  database = "telegraf"
+  retention_policy = ""
+  write_consistency = "any"
+  timeout = "5s"
+
+
+
+###############################################################################
+#                            INPUT PLUGINS                                    #
+###############################################################################
+
+
+# Read metrics about cpu usage
+[[inputs.cpu]]
+  ## Whether to report per-cpu stats or not
+  percpu = true
+  ## Whether to report total system cpu stats or not
+  totalcpu = true
+  ## If true, collect raw CPU time metrics
+  collect_cpu_time = false
+  ## If true, compute and report the sum of all non-idle CPU states
+  report_active = false
+
+
+# Read metrics about disk usage by mount point
+[[inputs.disk]]
+  ## By default stats will be gathered for all mount points.
+  ## Set mount_points will restrict the stats to only the specified mount points.
+  # mount_points = ["/"]
+
+  ## Ignore mount points by filesystem type.
+  ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs"]
+
+
+# Read metrics about memory usage
+[[inputs.mem]]
+  # no configuration
+
+
+# Read metrics about system load & uptime
+[[inputs.system]]
+  ## Uncomment to remove deprecated metrics.
+  # fielddrop = ["uptime_format"]
+
+
+# Gather metrics about network interfaces
+[[inputs.net]]
+#   ## By default, telegraf gathers stats from any up interface (excluding loopback)
+#   ## Setting interfaces will tell it to gather these explicit interfaces,
+#   ## regardless of status. When specifying an interface, glob-style
+#   ## patterns are also supported.
+#   ##
+#   # interfaces = ["eth*", "enp0s[0-1]", "lo"]
+#   ##
+#   ## On linux systems telegraf also collects protocol stats.
+#   ## Setting ignore_protocol_stats to true will skip reporting of protocol metrics.
+#   ##
+#   # ignore_protocol_stats = false
+#   ##
+
+
+# # Read metrics about temperature
+[[inputs.temp]]
+#   # no configuration
+
+
+
+###############################################################################
+#                            OLYMPOS SPECIFIC INPUT PLUGINS                                    #
+###############################################################################
+
+
+[[inputs.snmp]]
+  agents = [ "192.168.55.1:161", "192.168.55.12:161", "100.111.219.109:161", "100.78.176.94:161" ]
+  version = 2
+  community = "localmgmt"
+  name = "snmp"
+
+  [[inputs.snmp.field]]
+    name = "hostname"
+    oid = "SNMPv2-MIB::sysName.0"
+    is_tag = true
+
+  [[inputs.snmp.field]]
+    name = "uptime-mgmt"
+    oid = "DISMAN-EXPRESSION-MIB::sysUpTimeInstance"
+
+  [[inputs.snmp.field]]
+    name = "uptime-host"
+#    oid = "HOST-RESOURCES-MIB::hrSystemUptime"
+    oid = ".1.3.6.1.2.1.25.1.1.0"
+
+  [[inputs.snmp.field]]
+    name = "cpu-idle"
+#    oid = "UCD-SNMP-MIB::ssCpuIdle"
+    oid = ".1.3.6.1.4.1.2021.11.11.0"
+
+  [[inputs.snmp.field]]
+    name = "temperature"
+#    oid = "SYNOLOGY-SYSTEM-MIB::temperature"
+    oid = ".1.3.6.1.4.1.6574.1.2.0"
+
+  [[inputs.snmp.field]]
+    name = "raid-total-size"
+#    oid = "SYNOLOGY-RAID-MIB::raidTotalSize"
+    oid = ".1.3.6.1.4.1.6574.3.1.1.5.0"
+
+  [[inputs.snmp.field]]
+    name = "raid-free-size"
+#    oid = "SYNOLOGY-RAID-MIB::raidFreeSize"
+    oid = ".1.3.6.1.4.1.6574.3.1.1.4.0"
+
+  [[inputs.snmp.table]]
+    name = "interface"
+    inherit_tags = [ "hostname" ]
+    oid = "IF-MIB::ifTable"
+
+    [[inputs.snmp.table.field]]
+      name = "ifIndex"
+      oid = "IF-MIB::ifIndex"
+      is_tag = true
+
+  [[inputs.snmp.table]]
+    name = "synodisks"
+    inherit_tags = [ "hostname" ]
+#    oid = "SYNOLOGY-DISK-MIB::diskTable"
+    oid = ".1.3.6.1.4.1.6574.2.1"
+
+    [[inputs.snmp.table.field]]
+      name = "diskID"
+#      oid = "SYNOLOGY-DISK-MIB::diskID"
+        oid = ".1.3.6.1.4.1.6574.2.1.1.2"
+      is_tag = true
+
+
+# Monitors internet speed using speedtest.net service
+[[inputs.internet_speed]]
+  ## This plugin downloads many MB of data each time it is run. As such
+  ## consider setting a higher interval for this plugin to reduce the
+  ## demand on your internet connection.
+  # interval = "60m"
+  interval = "63m"
+
+  ## Enable to reduce memory usage
+  # memory_saving_mode = false
+
+  ## Caches the closest server location
+  # cache = false
+
