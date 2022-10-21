@@ -7,11 +7,18 @@
 - name: Playbook to backup rodopi
   hosts: rodopi
 
+  vars_files:
+    - vars/backup.yml
+    - roles/docker_nodered/vars/main.yml
+
+
   tasks:
 
     - name: Backup nodered container
       include_role:
         name: backup_docker_volume
       vars:
-        volume_folder: "/opt/docker/nodered"
+        volume_folder: "{{ nodered_volume_dir }}"
         stop_for_backup: false
+        compose_folder: "{{ nodered_volume_dir }}"
+
