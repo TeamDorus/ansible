@@ -6,7 +6,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om systemen te updaten naar de laatste versie van de packages
   hosts:
-    - tags_pop_os_21_10_impish
+    - tags_debian_bullseye
+    - tags_pop_os_22_04_jammy
+    - tags_ubuntu_22_04_jammy
     - tags_ubuntu_21_10_impish
     - tags_ubuntu_20_04_focal
 
