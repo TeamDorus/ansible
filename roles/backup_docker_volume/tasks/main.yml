@@ -24,7 +24,7 @@
 
 - name: Stop the container (unless told not to "stop_for_backup = false")
   docker_compose:
-    project_src: "{{ volume_folder }}"
+    project_src: "{{ compose_folder }}"
     state: present
     stopped: true
   when: stop_for_backup is undefined or stop_for_backup is true
@@ -40,7 +40,7 @@
 
 - name: Start the container (unless container was not stopped)
   docker_compose:
-    project_src: "{{ volumee_folder }}"
+    project_src: "{{ compose_folder }}"
     state: present
     stopped: false
   when: stop_for_backup is undefined or stop_for_backup is true
