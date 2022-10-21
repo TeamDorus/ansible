@@ -1,0 +1,16 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       N E T B O X (deel 3)
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to configure the host "netbox"
+  hosts: netbox
+  gather_facts: true
+
+
+  tasks:
+
+    - include_role:
+        name: config_portainer_endpoint_create
+

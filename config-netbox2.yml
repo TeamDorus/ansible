@@ -1,25 +1,15 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#       N E T B O X
+#       N E T B O X (deel 2)
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to configure the host "netbox"
-  hosts: netbox
+  hosts: 192.168.55.21
   gather_facts: true
 
 
   tasks:
-
-    - include_role:
-        name: docker
-      vars:
-        ansible_become: true   # install as root
-
-
-    - include_role:
-        name: config_portainer_endpoint_create
-
 
     - name: Install git to clone the netbox repository
       apt:
