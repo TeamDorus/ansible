@@ -11,17 +11,21 @@
 
 - name: Create telegraf.conf file from template
   template:
-    src: "telegraf.conf.j2"
+    src: "{{ item }}"
     dest: "{{ telegraf_volume_dir }}/telegraf.conf"
-
+  with_first_found:
+    - "telegraf-{{ ansible_hostname }}.conf.j2"
+    - "telegraf.conf.j2"
+  register: conf
 
 - name: Create docker-compose.yml file from template
   template:
     src: "docker-compose.yml.j2"
     dest: "{{ telegraf_volume_dir }}/docker-compose.yml"
+  register: compose
 
-
-- name: Start the docker stack
+- name: (Re)Start the docker stack
   docker_compose:
     project_src: "{{ telegraf_volume_dir }}"
     state: present
+    restarted: true
