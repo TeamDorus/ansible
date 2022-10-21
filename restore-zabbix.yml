@@ -1,0 +1,23 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Z A B B I X
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to restore zabbix
+  hosts: zabbix
+
+  vars_files:
+    - vars/secrets.yml
+
+
+  tasks:
+
+    - name: Restore zabbix mysql database
+      include_role:
+        name: restore_mysql_db
+      vars:
+        db_container: "zabbix-database-mysql"
+        db_backup_name: "zabbix"
+        db_rootpass: "{{ zabbix_mysql_root_password }}"
+        local_backup_file: "/home/eric/backup/zabbix/zabbix-2022-10-21.sql.gz"
