@@ -13,7 +13,7 @@ services:
     volumes:
       - "{{ grafana_volume_dir }}/varlib:/var/lib/grafana"
     environment:
-      - GF_auth.anonymous_enabled=true
-      - GF_auth.anonymous_org_name=Main Org.
-      - GF_auth.anonymous_org_role=Viewer
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-piechart-panel,vonage-status-panel,agenty-flowcharting-panel,alexanderzobnin-zabbix-app
