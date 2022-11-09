@@ -9,17 +9,6 @@
   gather_facts: true
 
 
-  vars:
-    - zabbix_host_groups:
-        - "Linux servers"
-        - "Ping only hosts"
-        - "LXC containers"
-
-    - zabbix_templates:
-        - "ICMP Ping"
-        - "Linux by Zabbix agent"
-
-
   tasks:
 
     - include_role:
@@ -40,11 +29,11 @@
         name: docker_grafana
 
     - include_role:
+        name: docker_heimdall
+
+    - include_role:
         name: docker_hostscanner
 
     - include_role:
         name: config_hostscanner_entry_create
-
-    - include_role:
-        name: docker_heimdall
 
