@@ -9,7 +9,71 @@
   gather_facts: true
 
 
+  vars_files:
+    - "vars/docker_general.yml"
+    - "vars/secrets.yml"
+
+
+
   tasks:
+
+    ########################################################################################
+    # Telegraf not in docker container because not all MIB files are available
+    #
+    - name: Installeer telegraf and snmp packages
+      apt:
+        name:
+          - telegraf
+          - snmp
+          - snmp-mibs-downloader
+          - unzip
+        state: present
+      vars:
+        ansible_become: true   # install as root
+
+    - name: Download Synology MIB file
+      get_url:
+        url: "https://global.download.synology.com/download/Document/Software/DeveloperGuide/Firmware/DSM/All/enu/Synology_MIB_File.zip"
+        dest: "/home/eric"
+      register: download_MIB
+
+       
+    - name: Extract MIB file to root folder
+      unarchive:
+        remote_src: true
+        src: "/home/eric/Synology_MIB_File.zip"
+        dest: "/home/eric"
+      when: download_MIB.changed | bool
+
+
+    - name: Copy MIB files to correct folder
+      copy: 
+        remote_src: true
+        src: "/home/eric/Synology_MIB_File/"
+        dest: "/usr/share/snmp/mibs"
+      when: download_MIB.changed | bool
+      vars:
+        ansible_become: true   # install as root
+
+
+    - name: Create telegraf.conf file from template
+      template:
+        src: "roles/docker_telegraf/templates/telegraf-olympos.conf.j2"
+        dest: "/etc/telegraf/telegraf.conf"
+      vars:
+        ansible_become: true   # install as root
+
+
+    - name: Restart telegraf
+      systemd:
+        name: telegraf
+        state: restarted
+      vars:
+        ansible_become: true   # install as root
+
+    ########################################################################################
+
+
 
     - include_role:
         name: docker
@@ -22,8 +86,6 @@
     - include_role:
         name: docker_influxdb
 
-    - include_role:
-        name: docker_telegraf
 
     - include_role:
         name: docker_grafana
