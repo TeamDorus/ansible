@@ -50,10 +50,10 @@
       copy: 
         remote_src: true
         src: "/home/eric/Synology_MIB_File/"
-        dest: "/usr/share/snmp/mibs"
+        dest: "/var/lib/mibs/ietf"
       when: download_MIB.changed | bool
       vars:
-        ansible_become: true   # install as root
+        ansible_become: true   # execute as root
 
 
     - name: Create telegraf.conf file from template
@@ -61,7 +61,7 @@
         src: "roles/docker_telegraf/templates/telegraf-olympos.conf.j2"
         dest: "/etc/telegraf/telegraf.conf"
       vars:
-        ansible_become: true   # install as root
+        ansible_become: true   # execute as root
 
 
     - name: Restart telegraf
@@ -69,7 +69,7 @@
         name: telegraf
         state: restarted
       vars:
-        ansible_become: true   # install as root
+        ansible_become: true   # execute as root
 
     ########################################################################################
 
