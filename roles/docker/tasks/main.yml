@@ -20,9 +20,7 @@
       - curl
       - gnupg-agent
       - software-properties-common
-#      - containerd.io
     state: present
-#  register: reboot
 
 
 - name: Add docker apt-key
@@ -39,8 +37,6 @@
   apt:
     name:
       - docker-compose
-#      - docker-ce
-#      - docker-ce-cli
     state: present
     update_cache: true
 
@@ -53,15 +49,9 @@
   register: group
 
 
-- name: Reboot remote server because user is added to the group
+- name: Reboot remote server because user is added to the group (and necessary for RasPi after installing docker)
   reboot:
   when: group.changed
-
-
-# Pip install caused issues on the PasPi, alternative solution to install docker-compose via apt was suggested
-#- name: Install docker-compose
-#  pip:
-#    name: docker-compose
 
 
 - name: Create directory for the docker persistent volumes
@@ -92,15 +82,6 @@
     mode: '0755'
 
 
-#- name: Copy the file for docker remote api service definition to the target
-#  copy:
-#    src: docker-remote-api.conf
-#    dest: /etc/systemd/system/docker.service.d/docker-remote-api.conf
-#    owner: root
-#    group: root
-#    mode: '0644'
-#  register: docker_service
-
 - name: Retrieve full path to dockerd
   command: which dockerd
   register: dockerd_path
@@ -111,8 +92,6 @@
     src: docker-remote-api.conf.j2
     dest: /etc/systemd/system/docker.service.d/docker-remote-api.conf
   register: docker_service
-
-
 
 
 - name: Restart the docker service and issue a deamon-reload
