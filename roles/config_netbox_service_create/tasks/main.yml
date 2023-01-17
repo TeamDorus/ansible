@@ -1,14 +1,14 @@
 ---
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#   Add Service entries in Netbox for the VM
+#   Add Service entries in Netbox for a virtual machine of physical device
 #
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Load in secrets variables
   include_vars: "vars/secrets.yml"
 
 
-- name: Create service entries
+- name: Create service entries for a virtual machine
   netbox.netbox.netbox_service:
     netbox_url: "{{ netbox_api_url }}"
     netbox_token: "{{ netbox_api_token }}"
@@ -20,3 +20,41 @@
     state: present
   with_items: "{{ netbox_services }}"
   delegate_to: localhost
+  when: ansible_facts['virtualization_role'] == "guest"
+
+
+- name: Create service entries for a physical device
+  netbox.netbox.netbox_service:
+    netbox_url: "{{ netbox_api_url }}"
+    netbox_token: "{{ netbox_api_token }}"
+    data:
+      device: "{{ inventory_hostname }}"
+      name: "{{ item.name }}"
+      port: "{{ item.port | int }}"
+      protocol: "{{ item.protocol }}"
+    state: present
+  with_items: "{{ netbox_services }}"
+  delegate_to: localhost
+  when: ansible_facts['virtualization_role'] == "NA"
+
+
+
+#####################################################################
+#
+#   Debug info
+#
+#
+#  RasPi
+#  "virtualization_role": "NA",
+#  "virtualization_tech_guest": [],
+#  "virtualization_tech_host": [],
+#  "virtualization_type": "NA",
+#
+#  LXC container
+#  "virtualization_role": "guest",
+#  "virtualization_tech_guest": [ "container", "lxc" ],
+#  "virtualization_tech_host": [ "kvm" ],
+#  "virtualization_type": "lxc"
+
+
+
