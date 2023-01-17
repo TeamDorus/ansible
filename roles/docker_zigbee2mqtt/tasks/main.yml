@@ -1,0 +1,22 @@
+---
+- name: Create directories
+  file:
+    path: "{{ zigbee2mqtt_volume_dir }}"
+    state: directory
+
+
+- name: Create docker-compose.yml file from template
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ zigbee2mqtt_volume_dir }}/docker-compose.yml"
+
+
+- name: Start the docker stack
+  docker_compose:
+    project_src: "{{ zigbee2mqtt_volume_dir }}"
+    state: present
+
+
+- name: Add zigbee2mqtt service to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create

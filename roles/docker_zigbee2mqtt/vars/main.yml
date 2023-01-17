@@ -1,0 +1,11 @@
+---
+zigbee2mqtt_volume_dir: "/opt/docker/zigbee2mqtt"
+
+netbox_services:
+  [
+    {
+      name: zigbee2mqtt,
+      port: 8080,
+      protocol: "tcp"
+    }
+  ]

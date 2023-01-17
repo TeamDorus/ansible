@@ -1,0 +1,23 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Z I G B E E   2   M Q T T 
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup zigbee2mqtt
+  hosts: Pi4_Flic_Case
+
+  vars_files:
+    - vars/backup.yml
+    - roles/docker_zigbee2mqtt/vars/main.yml
+
+
+  tasks:
+
+    - name: Backup zigbee2mqtt container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "{{ zigbee2mqtt_volume_dir }}"
+        stop_for_backup: true
+        compose_folder: "{{ zigbee2mqtt_volume_dir }}"

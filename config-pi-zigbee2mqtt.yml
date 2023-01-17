@@ -1,0 +1,72 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#         Play book to configure Raspberry Pi as Zigbee2MQTT gateway
+#
+#
+#   Let op: playbook eerste keer aanroepen met argument --ask-pass omdat de 
+#           public key van user "eric" dan nog niet bekend is.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook om een Raspberry Pi als Zigbee2MQTT gateway te configureren
+  hosts:
+    - Pi4_Flic_Case
+  become: true
+
+
+  vars_files:
+    - vars/secrets.yml
+
+
+  tasks:
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Initialize the Pi
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Ensure public key is in users .ssh/authorized_keys
+      authorized_key:
+        user: "{{ ansible_user }}"
+        state: present
+        key: "{{ item }}"
+      with_file:
+        - ~/.ssh/id_rsa.pub
+
+
+    - name: Make sure all packages are up-to-date
+      apt:
+        upgrade: dist
+        update_cache: true
+
+
+    - name: Set timezone to Europe/Amsterdam
+      timezone:
+        name: Europe/Amsterdam
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Configure system monitoring
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - include_role:
+        name: config_hostscanner_entry_create
+
+    - include_role:
+        name: pi_telegraf
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Install Docker en Zigbee2MQTT
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - include_role:
+        name: docker
+
+    - include_role:
+        name: config_portainer_endpoint_create
+
+    - include_role:
+        name: docker_zigbee2mqtt
