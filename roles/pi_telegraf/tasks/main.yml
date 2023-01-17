@@ -23,6 +23,11 @@
     dest: "/etc/telegraf/telegraf.conf"
 
 
+- name: Wait 30 seconds before restarting telegraf (necessary for RasPi)
+  pause:
+    seconds: 30
+
+
 - name: Restart telegraf
   systemd:
     name: telegraf
