@@ -15,6 +15,7 @@
       - telegraf
     state: present
     update_cache: true
+  register: installed
 
 
 - name: Create telegraf.conf file from template
@@ -26,6 +27,7 @@
 - name: Wait 30 seconds before restarting telegraf (necessary for RasPi)
   pause:
     seconds: 30
+  when: installed.changed
 
 
 - name: Restart telegraf
