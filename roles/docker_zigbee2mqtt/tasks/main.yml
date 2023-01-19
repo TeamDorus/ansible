@@ -5,6 +5,10 @@
     state: directory
 
 
+- name: Retrieve serial id of the Zigbee dongle
+  shell: ls /dev/serial/by-id | grep Zigbee
+  register: dongle_id
+
 - name: Create docker-compose.yml file from template
   template:
     src: "docker-compose.yml.j2"

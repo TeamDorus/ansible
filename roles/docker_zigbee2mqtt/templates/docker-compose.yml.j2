@@ -13,8 +13,12 @@ services:
     ports:
       - 8080:8080
     environment:
+      - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=mqtt://192.168.55.22:1883
+      - ZIGBEE2MQTT_CONFIG_FRONTEND=true
+      - ZIGBEE2MQTT_CONFIG_HOMEASSISTANT=true
       - TZ=Europe/Amsterdam
-#    devices:
-      # Make sure this matched your adapter location
-#      - /dev/serial/by-id/usb-Texas_Instruments_TI_CC2531_USB_CDC___0X00124B0018ED3DDF-if00:/dev/ttyACM0
+    devices:
+      # Make sure this matched your adapter location, see line below what is should look like
+      # - /dev/serial/by-id/usb-Silicon_Labs_Sonoff_Zigbee_3.0_USB_Dongle_Plus_0001-if00-port0:/dev/ttyACM0
+      - /dev/serial/by-id/{{ dongle_id.stdout }}:/dev/ttyACM0
 
