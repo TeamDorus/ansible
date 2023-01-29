@@ -26,11 +26,11 @@
 
 
 # Configuration for sending metrics to InfluxDB
-[[outputs.influxdb]]
+[[outputs.influxdb_v2]]
   urls = ["http://{{ influxdb_host }}:8086"]
-  database = "telegraf"
-  retention_policy = ""
-  write_consistency = "any"
+  token = "{{ influxdb2_token }}"
+  organization = "Bartok22"
+  bucket = "telegraf"
   timeout = "5s"
 
 
