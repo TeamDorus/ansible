@@ -59,48 +59,8 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #   Install packages and backup config files
+    #   Setup NUT Server
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Installeer benodigde packages
-      apt:
-        name:
-          - nut
-          - nut-server
-          - nut-client
-          - apache2
-          - nut-cgi
-        state: present
-
-
-    - name: Create backup folder for original config files
-      file:
-        path: /etc/nut/original_configs
-        state: directory
-        mode: '0755'
-      register: no_backup_yet
-
-
-    - name: Get a list of all nut config files
-      find:
-        paths: /etc/nut
-        patterns: "*.conf"
-      register: files_to_move
-      when: no_backup_yet.changed
-
-
-    - name: Move original configs to backup folder
-      command: "mv {{ item.path }} /etc/nut/original_configs"
-      with_items: "{{ files_to_move.files }}"
-      when: files_to_move.files is defined
-
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #
-    #   Create config files from templates
-    #
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-
-
+    - include_role:
+        name: pi_nutserver
