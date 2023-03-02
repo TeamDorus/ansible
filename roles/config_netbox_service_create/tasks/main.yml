@@ -35,7 +35,7 @@
     state: present
   with_items: "{{ netbox_services }}"
   delegate_to: localhost
-  when: ansible_facts['virtualization_role'] == "NA"
+  when: ansible_facts['virtualization_role'] != "guest"
 
 
 
