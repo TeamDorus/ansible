@@ -48,7 +48,7 @@ services:
     security_opt:
       - seccomp:unconfined
     volumes:
-      - "{{ zabbix_server_volume_dir }}:/var/lib/mysql"
+      - "{{ zabbix_server_volume_dir }}/mysql:/var/lib/mysql"
 
 
   zabbix-agent:

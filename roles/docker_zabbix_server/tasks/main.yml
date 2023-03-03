@@ -7,9 +7,15 @@
   include_vars: "vars/secrets.yml"
 
 
-- name: Create directories
+- name: Create base directory
   file:
     path: "{{ zabbix_server_volume_dir }}"
+    state: directory
+
+
+- name: Create directory for persistent volume
+  file:
+    path: "{{ zabbix_server_volume_dir }}/mysql"
     state: directory
 
 
