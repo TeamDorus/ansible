@@ -62,12 +62,12 @@
     group: "{{ docker_user }}"
 
 
-- name: Remove AppArmor package
-  apt:
-    name: apparmor
-    state: absent
-    purge: true
-    autoremove: true
+#- name: Remove AppArmor package
+#  apt:
+#    name: apparmor
+#    state: absent
+#    purge: true
+#    autoremove: true
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
