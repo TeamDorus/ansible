@@ -21,6 +21,9 @@ services:
     restart: unless-stopped
     environment:
     - UP_INFLUXDB_URL=http://olympos:8086
+    - UP_INFLUXDB_DB=unifi
+    - UP_INFLUXDB_USER=V1_Client
+    - UP_INFLUXDB_PASS={{ influxdb2_v1_password }}
     - UP_UNIFI_DEFAULT_URL=https://192.168.55.20:8443
     - UP_UNIFI_DEFAULT_USER=unifipoller
     - UP_UNIFI_DEFAULT_PASS=UPw8woord
