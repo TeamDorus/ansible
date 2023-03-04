@@ -1,23 +1,12 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#       T A Y G E T O S
+#       A C M E - D N S
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-- name: Playbook to configure the host "taygetos"
-  hosts: taygetos
+- name: Playbook to configure the host "acme-dns"
+  hosts: acme-dns
   gather_facts: true
-
-
-  vars:
-    - zabbix_host_groups:
-        - "Linux servers"
-        - "Ping only hosts"
-        - "LXC containers"
-
-    - zabbix_templates:
-        - "ICMP Ping"
-        - "Linux by Zabbix agent"
 
 
   tasks:
