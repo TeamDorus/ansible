@@ -61,50 +61,60 @@
       - "Raspberry Pi"
 
 
-- name: Set Admin user timezone
-  local_action:
-    module: community.zabbix.zabbix_user
-    server_url: "http://{{ zabbix_server }}"
-    login_user: "Admin"
-    login_password: "{{ zabbix_password }}"
-    alias: "Admin"
-    usrgrps:
-      - "Zabbix administrators"
-    timezone: "Europe/Amsterdam"
+#- name: Set Admin user timezone
+#  local_action:
+#    module: community.zabbix.zabbix_user
+#    server_url: "http://{{ zabbix_server }}"
+#    login_user: "Admin"
+#    login_password: "{{ zabbix_password }}"
+#    username: " Admin"
+#    passwd: "{{ zabbix_password }}"
+#    usrgrps:
+#      - "Zabbix administrators"
+#    timezone: "Europe/Amsterdam"
+#
+# This task gives errors, set  manually for now
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
 #
 # Import templates
 #
-- name: Import proxmox template
-  local_action:
-    module: community.zabbix.zabbix_template
-    server_url: "http://{{ zabbix_server }}"
-    login_user: "Admin"
-    login_password: "{{ zabbix_password }}"
-    template_xml: "{{ lookup('file', 'zabbix-pve-api.xml') }}"
-    state: present
+#- name: Import proxmox template
+#  local_action:
+#    module: community.zabbix.zabbix_template
+#    server_url: "http://{{ zabbix_server }}"
+#    login_user: "Admin"
+#    login_password: "{{ zabbix_password }}"
+#    template_xml: "{{ lookup('file', 'zabbix-pve-api.xml') }}"
+#    state: present
+#
+# This task gives errors, set  manually for now
 
 
-- name: Import pfsense active template
-  local_action:
-    module: community.zabbix.zabbix_template
-    server_url: "http://{{ zabbix_server }}"
-    login_user: "Admin"
-    login_password: "{{ zabbix_password }}"
-    template_xml: "{{ lookup('file', 'template_pfsense_active.xml') }}"
-    state: present
+#- name: Import pfsense active template
+#  local_action:
+#    module: community.zabbix.zabbix_template
+#    server_url: "http://{{ zabbix_server }}"
+#    login_user: "Admin"
+#    login_password: "{{ zabbix_password }}"
+#    template_xml: "{{ lookup('file', 'template_pfsense_active.xml') }}"
+#    state: present
+#
+# This task gives errors, set  manually for now
 
 
-- name: Import Synology template
-  local_action:
-    module: community.zabbix.zabbix_template
-    server_url: "http://{{ zabbix_server }}"
-    login_user: "Admin"
-    login_password: "{{ zabbix_password }}"
-    template_xml: "{{ lookup('file', 'template_synology_diskstation.yaml') }}"
-    state: present
+#- name: Import Synology template
+#  local_action:
+#    module: community.zabbix.zabbix_template
+#    server_url: "http://{{ zabbix_server }}"
+#    login_user: "Admin"
+#    login_password: "{{ zabbix_password }}"
+#    template_xml: "{{ lookup('file', 'template_synology_diskstation.yaml') }}"
+#    state: present
+#
+# This task gives errors, set  manually for now
+
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -121,7 +131,7 @@
     host_groups:
       - "Ping only hosts"
     link_templates:
-      - "ICMP Ping"
+      - "Template Module ICMP Ping"
     status: enabled
     state: present
     inventory_mode: disabled
