@@ -53,8 +53,8 @@
     - include_role:
         name: config_hostscanner_entry_create
 
-    - include_role:
-        name: pi_telegraf
+    #- include_role:
+    #    name: pi_telegraf
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
