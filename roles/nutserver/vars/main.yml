@@ -1,0 +1,14 @@
+---
+netbox_services:
+  [
+    {
+      name: NUT server,
+      port: 3493,
+      protocol: "tcp"
+    },
+    {
+      name: NUT web-ui,
+      port: 80,
+      protocol: "tcp"
+    }
+  ]
