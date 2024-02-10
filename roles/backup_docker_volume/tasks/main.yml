@@ -74,12 +74,16 @@
   when: stop_for_backup is undefined or stop_for_backup is true
 
 
-- name: Copy the backup to the backup share on the Ansible controller
-  copy:
+- name: Copy the backup to the Ansible controller (to tmp, cannot fetch to backup_share)
+  fetch:
     src: "/tmp/{{ backup_file }}"
     dest: "{{ backup_folder }}/"
-    remote_src: true
-  delegate_to: localhost
+    dest: "/tmp/"
+    flat: true
+
+
+- name: Move backup from tmp directory to the backup_share
+  local_action: ansible.builtin.command mv /tmp/{{ backup_file }} {{ backup_folder }}/
 
 
 - name: Delete backup file on remote host
