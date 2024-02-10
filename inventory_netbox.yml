@@ -1,6 +1,6 @@
 ---
 plugin: netbox.netbox.nb_inventory
-api_endpoint: http://netbox
+api_endpoint: http://netbox.bartok.thouars.nl
 token: "f6bbbd43fac07c4ce23c79d3c95c880fe054c02f"
 validate_certs: false
 config_context: false
