@@ -1,3 +1,4 @@
 vars/secrets.yml
 test*
 roles/test*
+vars/test*
