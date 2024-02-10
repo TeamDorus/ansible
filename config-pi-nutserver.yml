@@ -47,20 +47,27 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #   Configure system monitoring
-    #
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - include_role:
-        name: config_hostscanner_entry_create
-
-    #- include_role:
-    #    name: pi_telegraf
-
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #
     #   Setup NUT Server
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - include_role:
-        name: pi_nutserver
+        name: nutserver
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Configure system monitoring
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - include_role:
+        name: docker
+
+    - include_role:
+        name: config_hostscanner_entry_create
+
+    - include_role:
+        name: docker_telegraf
+
+    - include_role:
+        name: config_portainer_endpoint_create
+
