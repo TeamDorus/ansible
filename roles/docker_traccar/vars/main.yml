@@ -1,0 +1,22 @@
+---
+traccar_volume_dir: "/opt/docker/traccar"
+
+
+netbox_services:
+  [
+    {
+      name: web-ui,
+      port: 8082,
+      protocol: "tcp"
+    },
+    {
+      name: H02,
+      port: 5013,
+      protocol: "tcp"
+    },
+    {
+      name: OSMAND,
+      port: 5055,
+      protocol: "tcp"
+    }
+  ]

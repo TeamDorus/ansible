@@ -1,0 +1,35 @@
+---
+- name: Create directory for persitent volume
+  file:
+    path: "{{ traccar_volume_dir }}"
+    state: directory
+
+
+- name: Check whether config file for traccar exists or not
+  stat:
+    path: "{{ traccar_volume_dir }}/traccar.xml"
+  register: conf_traccar
+
+
+- name: Initial copy config file for traccar to remote host
+  copy:
+    src: "traccar.xml"
+    dest: "{{ traccar_volume_dir }}/traccar.xml"
+  when: conf_traccar.stat.exists == false
+
+
+- name: Create docker-compose.yml file from template
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ traccar_volume_dir }}/docker-compose.yml"
+
+
+- name: Start the docker stack
+  docker_compose:
+    project_src: "{{ traccar_volume_dir }}"
+    state: present
+
+
+- name: Add traccar services to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create
