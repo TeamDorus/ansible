@@ -9,17 +9,39 @@
 
   ################################################################
   #
-  #     Adust these variables for each individual restore !!
+  #
+  #     Run playbook with option " -i <hostname>, "  !!
+  #
   #
   ################################################################
 
-  hosts: taygetosxx
-  vars:
-    local_backup_file: "~/backup/taygetos/acme-dns-2022-03-17.tgz"
-    volume_folder: "/opt/docker/acme-dns"
+  hosts: all
+  gather_facts: false
+
+
+  vars_prompt:
+
+    - name: backup_file
+      prompt: "Enter the backup filename (incl directory)"
+      private: false
+
+    - name: volume_folder
+      prompt: "Enter the directory for the docker volume"
+      private: false
 
 
   tasks:
+
+    - name: Count the number of hosts that are targeted for the play
+      set_fact:
+        nr_hosts: "{{ ansible_play_hosts_all | count }}"
+
+
+    - name: Exit playbook when more that one host is targeted
+      fail:
+        msg: "More than one host is targeted. Use option ' -i <hostname>, '."
+      when: nr_hosts != "1"
+
 
     - name: Check whether docker-compose file for container exists
       stat:
@@ -27,12 +49,17 @@
       register: compose
 
 
+    - name: Exit playbook when no docker-compose file exists
+      fail:
+        msg: "No docker-compose file in {{ volume_folder }}."
+      when: compose.stat.exists is false
+
+
     - name: Stop the container when a docker-compose file exists
       docker_compose:
         project_src: "{{ volume_folder }}"
         state: present
         stopped: true
-      when: compose.stat.exists is true
 
 
     - name: Delete the existing volume folder and all its content
@@ -45,7 +72,7 @@
 
     - name: Restore the backup to the volume directory
       unarchive:
-        src: "{{ local_backup_file }}"
+        src: "{{ backup_file }}"
         dest: "{{ volume_folder | dirname }}"
 
 
