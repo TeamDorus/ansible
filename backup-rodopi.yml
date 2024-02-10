@@ -8,7 +8,7 @@
   hosts: rodopi
 
   vars_files:
-    - ../roles/docker_nodered/vars/main.yml
+    - roles/docker_nodered/vars/main.yml
 
 
   tasks:
