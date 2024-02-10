@@ -8,8 +8,7 @@
   hosts: rodopi
 
   vars_files:
-    - vars/backup.yml
-    - roles/docker_nodered/vars/main.yml
+    - ../roles/docker_nodered/vars/main.yml
 
 
   tasks:
@@ -21,4 +20,5 @@
         volume_folder: "{{ nodered_volume_dir }}"
         stop_for_backup: false
         compose_folder: "{{ nodered_volume_dir }}"
+        ansible_become: true
 

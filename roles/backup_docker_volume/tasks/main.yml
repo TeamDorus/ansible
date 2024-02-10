@@ -3,18 +3,42 @@
 #
 #   Backup a docker volume - volume folder is passed as variable "volume_folder"
 #
-#       variable "stop_for_backup" defines whether the contaier is stopped
+#       variable "stop_for_backup" defines whether the container is stopped
 #       before making a backup or not
 #
+#       must be called variable ansible_become = true
+#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-- name: Load in general backup variables
-  include_vars: "vars/backup.yml"
+- name: Load in secret variables
+  include_vars: "vars/secrets.yml"
 
 
-- name: Ensure that the remote backup folder exists
-  file:
-    path: "{{ remote_backup_folder }}"
+- name: Ensure that the backup root exists
+  ansible.builtin.file:
+    path: "{{ backup_mnt }}"
     state: directory
+    mode: '0755'
+
+
+- name: Ensure that the share is mounted on the backup root
+  ansible.posix.mount:
+    src: "{{ backup_share }}"
+    path: "{{ backup_mnt }}"
+    opts: "rw,username={{ backup_user }},password={{ backup_password }}"
+    fstype: cifs
+    state: ephemeral
+  
+
+- name: Define the backup folder
+  set_fact:
+    backup_folder: "{{ backup_mnt }}/Docker-Backup/{{ ansible_hostname }}"
+
+
+- name: Ensure that the backup folder exists
+  ansible.builtin.file:
+    path: "{{ backup_folder }}"
+    state: directory
+    mode: '0755'
 
 
 - name: Define the backup filename
@@ -33,9 +57,7 @@
 - name: Create backup of the volume directory
   archive:
     path: "{{ volume_folder }}"
-    dest: "{{ remote_backup_folder }}/{{ backup_file }}"
-  vars:
-    ansible_become: true   # Execute backup as root to avoid file priviledge issues
+    dest: "/tmp/{{ backup_file }}"
 
 
 - name: Start the container (unless container was not stopped)
@@ -46,19 +68,14 @@
   when: stop_for_backup is undefined or stop_for_backup is true
 
 
-- name: Define the local backup folder
-  set_fact:
-    local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
-
-
-- name: Fetch backup from remote host
-  fetch:
-    src: "{{ remote_backup_folder }}/{{ backup_file }}"
-    dest: "{{ local_backup_folder }}/"
-    flat: true
+- name: Copy the backup to the backup share
+  copy:
+    src: "/tmp/{{ backup_file }}"
+    dest: "{{ backup_folder }}/"
+    remote_src: true
 
 
 - name: Delete backup file on remote host
   file:
-    path: "{{ remote_backup_folder }}/{{ backup_file }}"
+    path: "/tmp/{{ backup_file }}"
     state: absent
