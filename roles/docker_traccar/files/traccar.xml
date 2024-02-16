@@ -25,7 +25,7 @@
 
 
     <entry key='event.forward.enable'>true</entry>
-    <entry key='event.forward.url'>http://pindos/traccar/event_recv/</entry>
+    <entry key='event.forward.url'>http://pindos.bartok.thouars.nl/traccar/event_recv/</entry>
 
 
 
