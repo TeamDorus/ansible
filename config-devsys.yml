@@ -40,6 +40,7 @@
           - python3-venv
           - cifs-utils
           - net-tools
+          - inetutils-ping
           - wireguard
           - snmp
           - snmp-mibs-downloader
