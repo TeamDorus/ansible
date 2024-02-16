@@ -20,3 +20,4 @@
         volume_folder: "{{ portainer_volume_dir }}"
         stop_for_backup: true
         compose_folder: "{{ portainer_volume_dir }}"
+        ansible_become: true
