@@ -8,7 +8,6 @@
   hosts: pindos
 
   vars_files:
-    - vars/backup.yml
     - roles/docker_portainer/vars/main.yml
 
 
