@@ -1,0 +1,93 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#         Playbook to backup all secret files on a development system
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook om alle geheime bestanden van een development systeem te backuppen
+  hosts:
+    - tags_devsys
+    - tags_devsys_workstation
+  become: true
+
+
+  pre_tasks:
+    - name: Load variable files
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "vars/devsys_{{ ansible_distribution }}.yml"
+        - "vars/devsys_default.yml"
+
+
+  tasks:
+
+    - name: Load in secret variables
+      include_vars: "vars/secrets.yml"
+
+
+    - name: Ensure that the backup root exists on the Ansible controller
+      ansible.builtin.file:
+        path: "{{ backup_mnt }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+
+
+    - name: Ensure that the share is mounted on the backup root on the Ansible controller
+      ansible.posix.mount:
+        src: "{{ backup_share }}"
+        path: "{{ backup_mnt }}"
+        opts: "rw,username={{ backup_user }},password={{ backup_password }}"
+        fstype: cifs
+        state: ephemeral
+      delegate_to: localhost
+      
+
+    - name: Define the backup folder
+      set_fact:
+        backup_folder: "{{ backup_mnt }}/DevSys-Backup/{{ ansible_hostname }}"
+
+
+    - name: Ensure that the backup folder exists on the Ansible controller
+      ansible.builtin.file:
+        path: "{{ backup_folder }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+
+
+    - name: Define the backup filename
+      set_fact:
+        backup_file: "secrets-{{ ansible_date_time.date }}.tgz"
+
+
+
+    - name: Create backup of the volume directory
+      archive:
+        path: "{{ volume_folder }}"
+        dest: "/tmp/{{ backup_file }}"
+".ssh/id_rsa"
+".ansible/password.txt"
+"{{ projects_dir }}/ansible/vars/secrets.yml"
+"{{ projects_dir }}/teraform/secret_vars_api"
+"{{ projects_dir }}/teraform/secret_vars_pw"
+"{{ projects_dir }}/flaskapp/flask/.env"
+
+
+
+    - name: Copy the backup to the Ansible controller (to tmp, cannot fetch to backup_share)
+      fetch:
+        src: "/tmp/{{ backup_file }}"
+        dest: "{{ backup_folder }}/"
+        dest: "/tmp/"
+        flat: true
+
+
+    - name: Move backup from tmp directory to the backup_share
+      local_action: ansible.builtin.command mv /tmp/{{ backup_file }} {{ backup_folder }}/
+
+
+    - name: Delete backup file on remote host
+      file:
+        path: "/tmp/{{ backup_file }}"
+        state: absent
