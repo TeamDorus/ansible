@@ -65,12 +65,12 @@
 - name: Copy the backup to the Ansible controller (to tmp, cannot fetch to backup_share)
   fetch:
     src: "/tmp/{{ backup_file }}"
-    dest: "/tmp/"
+    dest: "/tmp/{{ ansible_hostname }}-{{ backup_file }}"
     flat: true
 
 
 - name: Move backup from tmp directory to the backup_share
-  local_action: ansible.builtin.command mv /tmp/{{ backup_file }} {{ backup_folder }}/
+  local_action: ansible.builtin.command mv /tmp/{{ ansible_hostname }}-{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
 
 
 - name: Delete backup file on remote host
