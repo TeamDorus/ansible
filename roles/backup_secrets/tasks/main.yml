@@ -1,17 +1,14 @@
 ---
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#   Backup a docker volume - volume folder is passed as variable "volume_folder"
+#       Backup all secret files on a development system
 #
-#       variable "stop_for_backup" defines whether the container is stopped
-#       before making a backup or not
+#       !! must be called with variable ansible_become = true
 #
-#       must be called with variable ansible_become = true
-#
-#       Ansible controller mounts the SMB share ( required for backing up
-#       containers on hosts in the DMZ )
+#       Ansible controller mounts the SMB share 
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 - name: Load in secret variables
   include_vars: "vars/secrets.yml"
 
@@ -36,7 +33,7 @@
 
 - name: Define the backup folder
   set_fact:
-    backup_folder: "{{ backup_mnt }}/Docker-Backup/{{ ansible_hostname }}"
+    backup_folder: "{{ backup_mnt }}/DevSys-Backup/{{ ansible_hostname }}"
 
 
 - name: Ensure that the backup folder exists on the Ansible controller
@@ -49,29 +46,20 @@
 
 - name: Define the backup filename
   set_fact:
-    backup_file: "{{ volume_folder.split('/') | last }}-{{ ansible_date_time.date }}.tgz"
+    backup_file: "secrets-{{ ansible_date_time.date }}.tgz"
 
 
-- name: Stop the container (unless told not to "stop_for_backup = false")
-  docker_compose:
-    project_src: "{{ compose_folder }}"
-    state: present
-    stopped: true
-  when: stop_for_backup is undefined or stop_for_backup is true
-
-
-- name: Create backup of the volume directory
+- name: Create backup
   archive:
-    path: "{{ volume_folder }}"
+    path:
+      - "~{{ ansible_user }}/.ssh/id_rsa"
+      - "~{{ ansible_user }}/.ssh/id_rsa.pub"
+      - "~{{ ansible_user }}/.ansible/passwd.txt"
+      - "{{ projects_dir }}/ansible/vars/secrets.yml"
+      - "{{ projects_dir }}/terraform/secret_vars_api"
+      - "{{ projects_dir }}/terraform/secret_vars_pw"
+      - "{{ projects_dir }}/flaskapp/flask/.env"
     dest: "/tmp/{{ backup_file }}"
-
-
-- name: Start the container (unless container was not stopped)
-  docker_compose:
-    project_src: "{{ compose_folder }}"
-    state: present
-    stopped: false
-  when: stop_for_backup is undefined or stop_for_backup is true
 
 
 - name: Copy the backup to the Ansible controller (to tmp, cannot fetch to backup_share)

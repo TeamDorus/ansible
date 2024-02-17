@@ -4,54 +4,27 @@
 #       D E V S Y S
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-- name: Playbook to backup all secrets related files on devsys workstation
+- name: Playbook to backup all secrets related files on development systems
   hosts:
+    - tags_devsys
     - tags_devsys_workstation
 
 
-  vars_files:
-    - vars/backup.yml
+
+
+  pre_tasks:
+    - name: Load variable files
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "vars/devsys_{{ ansible_distribution }}.yml"
+        - "vars/devsys_default.yml"
 
 
   tasks:
 
-    - name: Ensure that the remote backup folder exists
-      file:
-        path: "{{ remote_backup_folder }}"
-        state: directory
-
-
-    - name: Define the backup filename
-      set_fact:
-        backup_file: "devsys-secrets-{{ ansible_date_time.date }}.tgz"
-
-
-    - name: Create backup
-      archive:
-        path:
-          - "~{{ ansible_user }}/.ssh/id_rsa"
-          - "~{{ ansible_user }}/.ssh/id_rsa.pub"
-          - "~{{ ansible_user }}/.ansible/passwd.txt"
-          - "~{{ ansible_user }}/Documents/ansible/vars/secrets.yml"
-          - "~{{ ansible_user }}/Documents/terraform/secret_vars_api"
-          - "~{{ ansible_user }}/Documents/terraform/secret_vars_pw"
-          - "~{{ ansible_user }}/Documents/flaskapp/flask/.env"
-        dest: "{{ remote_backup_folder }}/{{ backup_file }}"
-
-
-    - name: Define the local backup folder
-      set_fact:
-        local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
-
-
-    - name: Fetch backup from remote host
-      fetch:
-        src: "{{ remote_backup_folder }}/{{ backup_file }}"
-        dest: "{{ local_backup_folder }}/"
-        flat: true
-
-
-    - name: Delete backup file on remote host
-      file:
-        path: "{{ remote_backup_folder }}/{{ backup_file }}"
-        state: absent
+    - name: Backup secret files
+      include_role:
+        name: backup_secrets
+      vars:
+        projects_dir: "~{{ ansible_user }}"
+        ansible_become: true
