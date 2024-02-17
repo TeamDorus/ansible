@@ -1,0 +1,73 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       Backup all Terraform state files on a development system
+#
+#       !! must be called with variable ansible_become = true
+#
+#       Ansible controller mounts the SMB share 
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+- name: Load in secret variables
+  include_vars: "vars/secrets.yml"
+
+
+- name: Ensure that the backup root exists on the Ansible controller
+  ansible.builtin.file:
+    path: "{{ backup_mnt }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+
+
+- name: Ensure that the share is mounted on the backup root on the Ansible controller
+  ansible.posix.mount:
+    src: "{{ backup_share }}"
+    path: "{{ backup_mnt }}"
+    opts: "rw,username={{ backup_user }},password={{ backup_password }}"
+    fstype: cifs
+    state: ephemeral
+  delegate_to: localhost
+  
+
+- name: Define the backup folder
+  set_fact:
+    backup_folder: "{{ backup_mnt }}/DevSys-Backup/{{ ansible_hostname }}"
+
+
+- name: Ensure that the backup folder exists on the Ansible controller
+  ansible.builtin.file:
+    path: "{{ backup_folder }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+
+
+- name: Define the backup filename
+  set_fact:
+    backup_file: "terraform-{{ ansible_date_time.date }}.tgz"
+
+
+- name: Create backup
+  archive:
+    path:
+      - "{{ projects_dir }}/terraform/*/*/terraform*"
+    dest: "/tmp/{{ backup_file }}"
+
+
+- name: Copy the backup to the Ansible controller (to tmp, cannot fetch to backup_share)
+  fetch:
+    src: "/tmp/{{ backup_file }}"
+    dest: "/tmp/{{ ansible_hostname }}-{{ backup_file }}"
+    flat: true
+
+
+- name: Move backup from tmp directory to the backup_share
+  local_action: ansible.builtin.command mv /tmp/{{ ansible_hostname }}-{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
+
+
+- name: Delete backup file on remote host
+  file:
+    path: "/tmp/{{ backup_file }}"
+    state: absent
