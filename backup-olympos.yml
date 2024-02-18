@@ -8,7 +8,6 @@
   hosts: olympos
 
   vars_files:
-    - vars/backup.yml
     - roles/docker_influxdb/vars/main.yml
     - roles/docker_hostscanner/vars/main.yml
     - roles/docker_grafana/vars/main.yml
@@ -17,15 +16,6 @@
 
   tasks:
 
-    - name: Backup influxdb container
-      include_role:
-        name: backup_docker_volume
-      vars:
-        volume_folder: "{{ influxdb_volume_dir }}"
-        compose_folder: "{{ influxdb_volume_dir }}"
-        stop_for_backup: true
-
-
     - name: Backup hostscanner container
       include_role:
         name: backup_docker_volume
@@ -33,6 +23,17 @@
         volume_folder: "{{ hostscanner_volume_dir }}"
         compose_folder: "{{ hostscanner_volume_dir }}"
         stop_for_backup: false
+        ansible_become: true
+
+
+    - name: Backup influxdb container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "{{ influxdb_volume_dir }}"
+        compose_folder: "{{ influxdb_volume_dir }}"
+        stop_for_backup: true
+        ansible_become: true
 
 
     - name: Backup grafana container
@@ -42,6 +43,7 @@
         volume_folder: "{{ grafana_volume_dir }}"
         compose_folder: "{{ grafana_volume_dir }}"
         stop_for_backup: false
+        ansible_become: true
 
 
     - name: Backup heimdall container
@@ -51,4 +53,5 @@
         volume_folder: "{{ heimdall_volume_dir }}"
         compose_folder: "{{ heimdall_volume_dir }}"
         stop_for_backup: false
+        ansible_become: true
 
