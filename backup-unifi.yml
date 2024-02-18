@@ -7,16 +7,46 @@
 - name: Playbook to backup unifi
   hosts: unifi
 
+  become: true
+
   vars_files:
-    - vars/backup.yml
+    - vars/secrets.yml
     - roles/docker_unifi/vars/main.yml
 
 
   tasks:
 
-    - name: Define the local backup folder
+    - name: Ensure that the backup root exists on the Ansible controller
+      ansible.builtin.file:
+        path: "{{ backup_mnt }}"
+        state: directory
+        owner: eric
+        group: eric
+        mode: '0755'
+      delegate_to: localhost
+
+
+    - name: Ensure that the share is mounted on the backup root on the Ansible controller
+      ansible.posix.mount:
+        src: "{{ backup_share }}"
+        path: "{{ backup_mnt }}"
+        opts: "rw,file_mode=0777,dir_mode=0777,username={{ backup_user }},password={{ backup_password }}"
+        fstype: cifs
+        state: ephemeral
+      delegate_to: localhost
+      
+
+    - name: Define the backup folder
       set_fact:
-        local_backup_folder: "{{ local_backup_root }}/{{ ansible_hostname }}"
+        backup_folder: "{{ backup_mnt }}/Docker-Backup/{{ ansible_hostname }}"
+
+
+    - name: Ensure that the backup folder exists on the Ansible controller
+      ansible.builtin.file:
+        path: "{{ backup_folder }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
 
 
     - name: Get list of backup files
@@ -24,9 +54,17 @@
         paths: "{{ unifi_volume_dir }}/data/backup/autobackup/"
       register: files2fetch
 
+
     - name: Fetch backup from remote host
       fetch:
         src: "{{ item.path }}"
-        dest: "{{ local_backup_folder }}/"
+        dest: "{{ backup_folder }}/"
         flat: true
       with_items: "{{ files2fetch.files }}"
+
+
+    - name: Ensure that the share is unmounted from the Ansible controller
+      ansible.posix.mount:
+        path: "{{ backup_mnt }}"
+        state: unmounted
+      delegate_to: localhost
