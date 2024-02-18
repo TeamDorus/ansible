@@ -25,7 +25,7 @@
   ansible.posix.mount:
     src: "{{ backup_share }}"
     path: "{{ backup_mnt }}"
-    opts: "rw,username={{ backup_user }},password={{ backup_password }}"
+    opts: "rw,file_mode=0777,dir_mode=0777,username={{ backup_user }},password={{ backup_password }}"
     fstype: cifs
     state: ephemeral
   delegate_to: localhost
@@ -56,18 +56,10 @@
     dest: "/tmp/{{ backup_file }}"
 
 
-- name: Copy the backup to the Ansible controller (to tmp, cannot fetch to backup_share)
+- name: Copy the backup to the Ansible controller
   fetch:
     src: "/tmp/{{ backup_file }}"
-    dest: "/tmp/{{ ansible_hostname }}-{{ backup_file }}"
+    dest: "{{ backup_folder }}/"
     flat: true
 
 
-- name: Move backup from tmp directory to the backup_share
-  local_action: ansible.builtin.command mv /tmp/{{ ansible_hostname }}-{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
-
-
-- name: Delete backup file on remote host
-  file:
-    path: "/tmp/{{ backup_file }}"
-    state: absent
