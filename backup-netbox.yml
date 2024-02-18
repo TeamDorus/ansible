@@ -9,7 +9,6 @@
 
 
   vars_files:
-    - vars/backup.yml
     - roles/docker_netbox/vars/main.yml
 
 
@@ -22,3 +21,4 @@
         volume_folder: "{{ netbox_volume_dir }}"
         stop_for_backup: true
         compose_folder: "{{ netbox_docker_dir }}"
+        ansible_become: true
