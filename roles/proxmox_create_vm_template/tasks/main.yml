@@ -1,0 +1,6 @@
+---
+# tasks file 
+- include_tasks: download-image.yml
+- include_tasks: customize-image.yml
+- include_tasks: create-template.yml
+

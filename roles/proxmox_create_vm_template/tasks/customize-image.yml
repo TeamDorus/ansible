@@ -1,0 +1,37 @@
+---
+- name: install libguestfs tools (for virt-customize command)
+  apt:
+    name: libguestfs-tools
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  when: installAgent | bool
+
+
+- name: install qemu agent
+  ansible.builtin.shell: |
+    virt-customize -a {{ isopath }}/{{ templateName }}.qcow2 --install qemu-guest-agent
+  when: installAgent | bool
+
+
+- name: script to clear machine id
+  ansible.builtin.copy:
+    src: clear-machine-id.sh
+    dest: "{{ isopath }}/clear-machine-id.sh"
+    mode: '0755'
+
+
+- name: fix machine id
+  ansible.builtin.shell: |
+    virt-customize -a {{ isopath }}/{{ templateName }}.qcow2 --run {{ isopath }}/clear-machine-id.sh
+
+
+- name: delete clear machine shell script
+  ansible.builtin.file:
+    path: "{{ isopath }}/clear-machine-id.sh"
+    state: absent
+
+
+- name: resize cloud-init images
+  ansible.builtin.command: "qemu-img resize {{ isopath }}/{{ templateName }}.qcow2 {{ templateDiskSize }}"
+

@@ -1,0 +1,31 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       C R E A T E    P R O X M O X    T E M P L A T E
+#
+#
+#       Based on: https://github.com/PragmaticEngineering/ansibleRole-proxmox-templates
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to create a new VM template on a Proxmox host
+  hosts: HM80
+  gather_facts: true
+
+  vars_files:
+    - "vars/secrets.yml"
+
+  vars:
+    ansible_user: root
+    ansible_password: "{{ B22cluster_root_password }}"
+
+    templateURL: https://cloud-images.ubuntu.com/releases/mantic/release/ubuntu-23.10-server-cloudimg-amd64.img
+    # the template name will be the name of the Proxmox template and the Netbox tag
+    templateName: "ubuntu-23-10-mantic"
+
+
+    
+  tasks:
+
+    - include_role:
+        name: proxmox_create_vm_template
+

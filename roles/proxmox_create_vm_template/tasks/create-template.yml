@@ -1,0 +1,64 @@
+---
+- name: Create VMs
+  ansible.builtin.shell:
+    cmd: qm create {{ next_vm_id | int }} --memory {{ templateMemory }} --core {{ templateCores }} --name {{ templateName }} --net0 virtio,bridge=vmbr0
+  register: command_result
+  failed_when:
+    - '"already exists" not in command_result.stderr'
+    - command_result.rc != 0
+
+
+- name: copy ssh key to proxmox
+  ansible.builtin.copy:
+    content: "{{ sshkey }}"
+    dest: "{{ isopath }}/id_rsa.pub"
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: script to configure the cloud init drive
+  ansible.builtin.copy:
+    src: config.sh
+    dest: "{{ isopath }}/config.sh"
+    mode: '0755'
+
+
+- name: set cloud init settings
+  ansible.builtin.script: "config.sh {{ next_vm_id | int }} {{ ipconfig0 }} {{ isopath }}/id_rsa.pub {{ ciuser }} {{ importStorage }} {{ isopath }}/{{ templateName }}.qcow2"
+  register: config
+  changed_when: "'Skipping' not in config.stdout"
+
+
+- name: delete ssh key file
+  ansible.builtin.file:
+    path: "{{ isopath }}/id_rsa.pub"
+    state: absent
+
+
+- name: delete cloud init configuration script
+  ansible.builtin.file:
+    path: "{{ isopath }}/config.sh"
+    state: absent
+
+
+- name: delete qcow2 disk image
+  ansible.builtin.file:
+    path: "{{ isopath }}/{{ templateName }}.qcow2"
+    state: absent
+
+
+- name: convert to template
+  ansible.builtin.shell:
+    cmd: qm template {{ next_vm_id | int }}
+
+
+- name: Add new tag for the template to NetBox
+  netbox.netbox.netbox_tag:
+    netbox_url: "{{ netbox_api_url }}"
+    netbox_token: "{{ netbox_api_token }}"
+    data:
+      name: "{{ templateName }}"
+      color: "ffeb3b"   # color codes can be found at https://github.com/netbox-community/netbox/blob/v3.4.5/netbox/utilities/choices.py#L100-L127
+    state: present
+  delegate_to: localhost

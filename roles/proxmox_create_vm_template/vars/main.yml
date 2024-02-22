@@ -1,0 +1,19 @@
+---
+isopath: /opt/isos                    # path to where the images will be downloaded to on your proxmox host.
+importStorage: local-zfs              # the storage where the templates will be imported to.
+
+# starting ID for the VMs, the first VM will have the ID 900, the second 901 and so on.
+# if you already have vms with the ID it will automatically increment the ID to the next available one.
+templateStartingID: 900
+
+templateMemory: 4096                  # memory in MB
+templateCores: 4                      # number of cores
+templateDiskSize: 4G                  # disk size in GB
+
+ipconfig0: ip=dhcp                    # ip6=auto,ip=dhcp 
+ciuser: "{{ vm_user_name }}"          # the user that will be added via cloudinit configurations
+# ssh key that will be added to the cloud init user, this should be your public key.
+sshkey: "{{ vm_user_public_key }}"
+
+installAgent: true                    # if true the proxmox agent will be installed on the VMs
+
