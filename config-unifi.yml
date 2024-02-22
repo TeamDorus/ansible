@@ -6,9 +6,6 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to configure the host "unifi"
   hosts: unifi
-
-  # wait with gathering facts until host is up and running
-  # fact gathering will be done in role " basic_lxc"
   gather_facts: true
 
 
