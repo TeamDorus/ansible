@@ -7,4 +7,4 @@
   tasks:
 
     - debug:
-        msg: "Inventroy hostname = {{ inventory_hostname }}"
+        msg: "Inventory hostname = {{ inventory_hostname }}"
