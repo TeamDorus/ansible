@@ -1,0 +1,50 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       I N S T A L L     P R O X M O X    C E R T I F I C A T E
+#
+#
+#       Installs the bartok.thouars.nl wildcard certificate for the Proxmox web GUI
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to install valid certificate for the Proxmox web GUI
+  hosts: HM80
+  gather_facts: true
+
+  vars_files:
+    - "vars/secrets.yml"
+
+  vars:
+    ansible_user: root
+    ansible_password: "{{ B22cluster_root_password }}"
+
+    local_cert_dir: "../certificates"
+    proxmox_cert_dir: "/etc/pve/local"
+
+    
+  tasks:
+
+    - name: copy key file to the remote host
+      ansible.builtin.copy:
+        src: "{{ local_cert_dir }}/wildcard-bartok.thouars.nl.key"
+        dest: "{{ proxmox_cert_dir }}/pveproxy-ssl.key"
+        owner: root
+        group: www-data
+        mode: "0640"
+        force: true
+
+
+    - name: copy certificate file to the remote host
+      ansible.builtin.copy:
+        src: "{{ local_cert_dir }}/wildcard-bartok.thouars.nl.crt"
+        dest: "{{ proxmox_cert_dir }}/pveproxy-ssl.pem"
+        owner: root
+        group: www-data
+        mode: "0640"
+        force: true
+
+
+    - name: Restart the web GUI (pveproxy)
+      ansible.builtin.service:
+        name: pveproxy
+        state: restarted
