@@ -1,0 +1,10 @@
+---
+- name: Test playbook
+  hosts:
+    - all
+
+
+  tasks:
+
+    - debug:
+        msg: "Inventroy hostname = {{ inventory_hostname }}"
