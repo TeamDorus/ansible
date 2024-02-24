@@ -7,4 +7,5 @@
   tasks:
 
     - debug:
+        #var: ansible_facts
         msg: "Inventory hostname = {{ inventory_hostname }}"
