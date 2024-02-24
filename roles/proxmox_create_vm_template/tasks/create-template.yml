@@ -59,6 +59,7 @@
     netbox_token: "{{ netbox_api_token }}"
     data:
       name: "{{ templateName }}"
+      slug: "{{ netboxSlug }}"
       color: "ffeb3b"   # color codes can be found at https://github.com/netbox-community/netbox/blob/v3.4.5/netbox/utilities/choices.py#L100-L127
     state: present
   delegate_to: localhost
