@@ -14,3 +14,18 @@
     - include_role:
         name: config_portainer_endpoint_create
 
+
+    - name: Add NetBox tags to the virtual machine
+      netbox.netbox.netbox_virtual_machine:
+        netbox_url: "{{ netbox_api_url }}"
+        netbox_token: "{{ netbox_api_token }}"
+        data:
+          name: "{{ ansible_hostname }}"
+          tags: 
+          - ansible
+          - docker
+          - "{{ ansible_distribution }}-{{ ansible_distribution_release }}"
+        state: present
+      delegate_to: localhost
+      when: ansible_facts['virtualization_role'] == "guest"
+

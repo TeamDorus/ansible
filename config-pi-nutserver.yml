@@ -10,7 +10,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een Raspberry Pi als NUT Server te configureren
   hosts:
-    - NUT_Server
+    - nutserver
   become: true
 
 
@@ -71,3 +71,17 @@
     - include_role:
         name: config_portainer_endpoint_create
 
+
+    - name: Add NetBox tags to the device
+      netbox.netbox.netbox_device:
+        netbox_url: "{{ netbox_api_url }}"
+        netbox_token: "{{ netbox_api_token }}"
+        data:
+          name: "{{ ansible_hostname }}"
+          tags: 
+          - ansible
+          - docker
+          - "{{ ansible_distribution }}-{{ ansible_distribution_release }}"
+        state: present
+      delegate_to: localhost
+      when: ansible_facts['virtualization_role'] != "guest"
