@@ -6,6 +6,7 @@
   vars:
     secrets_dir: "~{{ ansible_user }}/ansible/vars"
 
+
   tasks:
 
     - name: Include secret variables
