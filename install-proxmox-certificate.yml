@@ -8,7 +8,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to install valid certificate for the Proxmox web GUI
-  hosts: N100
+  hosts: HM80, N100
   gather_facts: true
 
   vars_files:
