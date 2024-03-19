@@ -11,6 +11,7 @@
     - roles/docker_influxdb/vars/main.yml
     - roles/docker_hostscanner/vars/main.yml
     - roles/docker_grafana/vars/main.yml
+    - roles/docker_uptime-kuma/vars/main.yml
     - roles/docker_heimdall/vars/main.yml
 
 
@@ -42,6 +43,16 @@
       vars:
         volume_folder: "{{ grafana_volume_dir }}"
         compose_folder: "{{ grafana_volume_dir }}"
+        stop_for_backup: false
+        ansible_become: true
+
+
+    - name: Backup uptime-kuma container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "{{ uptime_kuma_volume_dir }}"
+        compose_folder: "{{ uptime_kuma_volume_dir }}"
         stop_for_backup: false
         ansible_become: true
 

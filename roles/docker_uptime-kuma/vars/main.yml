@@ -1,0 +1,11 @@
+---
+uptime_kuma_volume_dir: "/opt/docker/uptime-kuma"
+
+netbox_services:
+  [
+    {
+      name: "uptime-kuma",
+      port: 3001,
+      protocol: "tcp"
+    }
+  ]

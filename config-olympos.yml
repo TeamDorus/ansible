@@ -86,9 +86,11 @@
     - include_role:
         name: docker_influxdb
 
-
     - include_role:
         name: docker_grafana
+
+    - include_role:
+        name: docker_uptime-kuma
 
     - include_role:
         name: docker_heimdall

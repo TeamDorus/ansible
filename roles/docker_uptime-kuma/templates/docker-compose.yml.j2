@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - {{ uptime_kuma_volume_dir }}/data:/app/data
+      #- /var/run/docker.sock:/var/run/docker.sock
+
