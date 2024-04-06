@@ -22,6 +22,9 @@
     - include_role:
         name: docker_portainer
 
+    - include_role:
+        name: docker_homepage
+
 
     - name: Add NetBox tags to the virtual machine
       netbox.netbox.netbox_virtual_machine:

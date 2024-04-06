@@ -9,6 +9,7 @@
 
   vars_files:
     - roles/docker_portainer/vars/main.yml
+    - roles/docker_homepage/vars/main.yml
 
 
   tasks:
@@ -20,6 +21,16 @@
         volume_folder: "{{ portainer_volume_dir }}"
         stop_for_backup: true
         compose_folder: "{{ portainer_volume_dir }}"
+        ansible_become: true
+
+
+    - name: Backup homepage container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "{{ homepage_volume_dir }}"
+        stop_for_backup: true
+        compose_folder: "{{ homepage_volume_dir }}"
         ansible_become: true
 
 

@@ -1,0 +1,11 @@
+---
+homepage_volume_dir: "/opt/docker/homepage"
+
+netbox_services:
+  [
+    {
+      name: "homepage",
+      port: 9001,
+      protocol: "tcp"
+    }
+  ]
