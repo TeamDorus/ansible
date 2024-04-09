@@ -9,20 +9,20 @@
 
 
   vars_files:
-    - roles/docker_acme_dns/vars/main.yml
+    # - roles/docker_acme_dns/vars/main.yml
     - roles/docker_traccar/vars/main.yml
 
 
   tasks:
 
-    - name: Backup acme-dns container
-      include_role:
-        name: backup_docker_volume
-      vars:
-        volume_folder: "{{ acme_dns_volume_dir }}"
-        stop_for_backup: true
-        compose_folder: "{{ acme_dns_volume_dir }}"
-        ansible_become: true
+    # - name: Backup acme-dns container
+    #   include_role:
+    #     name: backup_docker_volume
+    #   vars:
+    #     volume_folder: "{{ acme_dns_volume_dir }}"
+    #     stop_for_backup: true
+    #     compose_folder: "{{ acme_dns_volume_dir }}"
+    #     ansible_become: true
 
 
     - name: Backup traccar container
