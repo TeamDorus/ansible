@@ -12,6 +12,7 @@ templateDiskSize: 4G                  # disk size in GB
 
 ipconfig0: ip=dhcp                    # ip6=auto,ip=dhcp 
 ciuser: "{{ vm_user_name }}"          # the user that will be added via cloudinit configurations
+cipass: "{{ vm_user_password }}"
 # ssh key that will be added to the cloud init user, this should be your public key.
 sshkey: "{{ vm_user_public_key }}"
 

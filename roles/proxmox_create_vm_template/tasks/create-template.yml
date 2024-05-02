@@ -25,7 +25,7 @@
 
 
 - name: set cloud init settings
-  ansible.builtin.script: "config.sh {{ next_vm_id | int }} {{ ipconfig0 }} {{ isopath }}/id_rsa.pub {{ ciuser }} {{ importStorage }} {{ isopath }}/{{ templateName }}.qcow2"
+  ansible.builtin.script: "config.sh {{ next_vm_id | int }} {{ ipconfig0 }} {{ isopath }}/id_rsa.pub {{ ciuser }} {{ cipass }} {{ importStorage }} {{ isopath }}/{{ templateName }}.qcow2"
   register: config
   changed_when: "'Skipping' not in config.stdout"
 

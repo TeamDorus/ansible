@@ -18,10 +18,10 @@
     ansible_user: root
     ansible_password: "{{ B22cluster_root_password }}"
 
-    templateURL: https://cloud-images.ubuntu.com/releases/mantic/release/ubuntu-23.10-server-cloudimg-amd64.img
+    templateURL: https://cloud-images.ubuntu.com/releases/noble/release/ubuntu-24.04-server-cloudimg-amd64.img
     # the template name will be the name of the Proxmox template and the Netbox tag. NetBox slug has own variable
-    templateName: "ubuntu-23.10-mantic"
-    netboxSlug: "ubuntu-mantic"
+    templateName: "ubuntu-24.04-noble"
+    netboxSlug: "ubuntu-noble"
 
 
     
