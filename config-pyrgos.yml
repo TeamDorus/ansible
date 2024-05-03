@@ -87,13 +87,22 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #         Install ssh keys for ansible_user
+    #         Install ssh keys and gitconfig file for ansible_user
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Installeer alle files uit de .ssh directory voor ansible_user
       copy:
         src: "~{{ ansible_user }}/.ssh/"
         dest: "~{{ ansible_user }}/.ssh/"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: preserve
+
+
+    - name: Installeer .gitconfig file voor ansible_user
+      copy:
+        src: "~{{ ansible_user }}/.gitconfig"
+        dest: "~{{ ansible_user }}/.gitconfig"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: preserve
