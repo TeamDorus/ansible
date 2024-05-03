@@ -7,6 +7,9 @@
 #
 #       Ansible controller mounts the SMB share 
 #
+#
+#       Note: when cifs is not found, install linux-extra-modules package.
+#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 - name: Load in secret variables
