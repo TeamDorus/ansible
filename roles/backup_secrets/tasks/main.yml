@@ -55,6 +55,7 @@
       - "~{{ ansible_user }}/.ssh/id_rsa"
       - "~{{ ansible_user }}/.ssh/id_rsa.pub"
       - "~{{ ansible_user }}/.ansible/passwd.txt"
+      - "~{{ ansible_user }}/.gitconfig"
       - "{{ projects_dir }}/ansible/vars/secrets.yml"
       - "{{ projects_dir }}/terraform/secret_vars_api"
       - "{{ projects_dir }}/terraform/secret_vars_pw"
