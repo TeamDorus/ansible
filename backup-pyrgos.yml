@@ -1,15 +1,12 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#       D E V S Y S
+#       P Y R G O S
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to backup all secrets related files on development systems
   hosts:
-    - tags_devsys
-    - tags_devsys_workstation
-
-
+    - pyrgos
 
 
   pre_tasks:
