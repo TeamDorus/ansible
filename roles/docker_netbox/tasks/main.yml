@@ -40,7 +40,7 @@
 
 
 - name: Start the docker stack
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ netbox_docker_dir }}"
     state: present
 

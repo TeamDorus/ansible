@@ -42,7 +42,7 @@
 - name: Install docker & docker-compose
   apt:
     name:
-      - docker-compose
+      - docker-compose-v2
     state: present
     update_cache: true
 

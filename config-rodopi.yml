@@ -5,7 +5,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to configure the host "rodopi"
-  hosts: rodopi
+  hosts: testrodopi
   gather_facts: true
 
 
@@ -19,10 +19,6 @@
 
     - include_role:
         name: config_portainer_endpoint_create
-
-
-    - include_role:
-        name: config_hostscanner_entry_create
 
 
     - include_role:
