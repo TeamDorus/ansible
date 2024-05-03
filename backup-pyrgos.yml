@@ -1,0 +1,36 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#       D E V S Y S
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Playbook to backup all secrets related files on development systems
+  hosts:
+    - tags_devsys
+    - tags_devsys_workstation
+
+
+
+
+  pre_tasks:
+    - name: Load variable files
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "vars/devsys_{{ ansible_distribution }}.yml"
+        - "vars/devsys_default.yml"
+
+
+  tasks:
+
+    - name: Backup secret files
+      include_role:
+        name: backup_secrets
+      vars:
+        ansible_become: true
+
+
+    - name: Backup terraform state files
+      include_role:
+        name: backup_terraform
+      vars:
+        ansible_become: true
