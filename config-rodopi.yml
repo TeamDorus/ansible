@@ -5,7 +5,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to configure the host "rodopi"
-  hosts: testrodopi
+  hosts: rodopi
   gather_facts: true
 
 
@@ -27,6 +27,10 @@
 
     - include_role:
         name: docker_nodered
+
+
+    - include_role:
+        name: docker_open-webui
 
 
     - name: Add NetBox tags to the virtual machine

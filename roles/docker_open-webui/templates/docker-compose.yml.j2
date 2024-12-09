@@ -1,0 +1,16 @@
+---
+version: "3"
+
+services:
+
+  open-webui:
+    container_name: open-webui
+    image: ghcr.io/open-webui/open-webui
+    restart: unless-stopped
+    ports:
+      - 3000:8080
+    environment:
+      - WEBUI_AUTH=False
+      - OLLAMA_BASE_URL=http://192.168.55.87:11434
+    volumes:
+      - "{{ open_webui_volume_dir }}/data:/app/backend/data"

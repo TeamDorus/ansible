@@ -1,0 +1,11 @@
+---
+open_webui_volume_dir: "/opt/docker/open-web_ui"
+
+netbox_services:
+  [
+    {
+      name: open-webui,
+      port: 3000,
+      protocol: "tcp"
+    }
+  ]

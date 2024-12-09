@@ -22,3 +22,13 @@
         compose_folder: "{{ nodered_volume_dir }}"
         ansible_become: true
 
+
+    - name: Backup Open WebUI container
+      include_role:
+        name: backup_docker_volume
+      vars:
+        volume_folder: "{{ open_webui_volume_dir }}"
+        stop_for_backup: false
+        compose_folder: "{{ open_webui_volume_dir }}"
+        ansible_become: true
+

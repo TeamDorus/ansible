@@ -1,0 +1,28 @@
+---
+- name: Create base directory
+  file:
+    path: "{{ open_webui_volume_dir }}"
+    state: directory
+
+
+- name: Create data directory
+  file:
+    path: "{{ open_webui_volume_dir }}/data"
+    state: directory
+
+
+- name: Create docker-compose.yml file from template
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ open_webui_volume_dir }}/docker-compose.yml"
+
+
+- name: Start the docker stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ open_webui_volume_dir }}"
+    state: present
+
+
+- name: Add nodered service to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create
