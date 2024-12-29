@@ -164,6 +164,15 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
+    #         Install docker and docker-compose
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - include_role:
+        name: docker
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
     #         Clone ansible GIT repository and related secrets files
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -184,21 +193,13 @@
       vars:
         ansible_become: false   # clone as {{ ansible_user }}
 
-    - name: Create temp var because with_first_found fails with the variable ansible_user
-      set_fact:
-        devuser: "{{ ansible_user }}"
-
     - name: Copy ansible vault secrets.yml
       copy:
-        src: "{{ item }}"
-        dest: "{{ projects_dir }}/ansible/vars/secrets.yml"
+        src: "~{{ ansible_user }}/.ansible/secrets.yml"
+        dest: "~{{ ansible_user }}/.ansible/secrets.yml"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0600'
-        decrypt: false          # do not decrypt the vault file
-      with_first_found:
-        - "~{{ devuser }}/ansible/vars/secrets.yml"
-        - "~{{ devuser }}/Documents/ansible/vars/secrets.yml"
 
     - name: Copy ansible vault password file
       copy:
