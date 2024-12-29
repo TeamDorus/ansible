@@ -1,18 +1,9 @@
 ---
 - name: Test playbook
-  hosts:
-    - olympos
-
-  vars:
-    secrets_dir: "~{{ ansible_user }}/ansible/vars"
-
+  hosts: olympos
+  gather_facts: true
 
   tasks:
-
-    - name: Include secret variables
-      ansible.builtin.include_vars:
-        file: "{{ secrets_dir }}/secrets.yml"
-
 
     - debug:
         #var: ansible_facts
