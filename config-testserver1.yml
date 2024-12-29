@@ -6,6 +6,9 @@
   # fact gathering will be done in role " basic_lxc"
   gather_facts: true
 
+  vars_files:
+    - "~/.ansible/secrets.yml"
+
 #  vars:
 #    netbox_services: [{name: checkmk webui, port: 8000, protocol: "tcp"}]
 
