@@ -11,7 +11,7 @@
 
   vars_files:
     - "vars/docker_general.yml"
-    - "vars/secrets.yml"
+    - "~/.ansible/secrets.yml"
 
 
 

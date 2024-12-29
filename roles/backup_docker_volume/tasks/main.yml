@@ -13,7 +13,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Load in secret variables
-  include_vars: "vars/secrets.yml"
+  include_vars: "~/.ansible/secrets.yml"
 
 
 - name: Ensure that the backup root exists on the Ansible controller

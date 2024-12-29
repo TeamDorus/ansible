@@ -12,7 +12,7 @@
   gather_facts: true
 
   vars_files:
-    - "vars/secrets.yml"
+    - "~/.ansible/secrets.yml"
 
   vars:
     ansible_user: root

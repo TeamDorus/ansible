@@ -4,7 +4,7 @@
 
 
 - name: Load in general secret variables
-  include_vars: "vars/secrets.yml"
+  include_vars: "~/.ansible/secrets.yml"
 
 
 - name: Create base directory

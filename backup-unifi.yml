@@ -10,7 +10,7 @@
   become: true
 
   vars_files:
-    - vars/secrets.yml
+    - ~/.ansible/secrets.yml
     - roles/docker_unifi/vars/main.yml
 
 

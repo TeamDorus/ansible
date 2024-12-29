@@ -5,7 +5,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Load in secrets variables
-  include_vars: "vars/secrets.yml"
+  include_vars: "~/.ansible/secrets.yml"
 
 
 - name: Get current hosts

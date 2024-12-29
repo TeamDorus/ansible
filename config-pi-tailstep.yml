@@ -15,7 +15,7 @@
 
 
   vars_files:
-    - vars/secrets.yml
+    - ~/.ansible/secrets.yml
 
   vars_prompt:
     - name: authkey

@@ -11,7 +11,7 @@
   gather_facts: false   # wait with gathering facts until host is up and running
 
   vars_files:
-    - vars/secrets.yml
+    - ~/.ansible/secrets.yml
 
 
   tasks:
