@@ -6,7 +6,10 @@
 #       variable "stop_for_backup" defines whether the container is stopped
 #       before making a backup or not
 #
-#       must be called with variable ansible_become = true
+#   !!  must be called with "become: true" in the parent playbook
+#           using the variable "ansible_become: true" in the parent playbook
+#           conflicts with setting "ansible_become: false" in the task for
+#           executing the SCP command.
 #
 #       Ansible controller mounts the SMB share ( required for backing up
 #       containers on hosts in the DMZ )
