@@ -17,10 +17,17 @@
     - name: Get location of ssh key (required with semaphore)
       command: echo ~
       delegate_to: localhost
-      register: command_output
+      register: command_output1
+
+    - name: Get location of ssh key (required with semaphore)
+      command: echo ~
+      delegate_to: localhost
+      register: command_output2
       vars:
         ansible_become: false
 
     - debug:
-        msg: "tilde = |{{ command_output.stdout }}|"
+        msg: "tilde1 = |{{ command_output1.stdout }}|"
+    - debug:
+        msg: "tilde2 = |{{ command_output2.stdout }}|"
 
