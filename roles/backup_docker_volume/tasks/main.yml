@@ -78,6 +78,8 @@
   command: echo ~
   delegate_to: localhost
   register: command_output
+  vars:
+    ansible_become: false
 
 
 - name: Copy backup from remote host to the backup_share

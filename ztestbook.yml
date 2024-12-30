@@ -2,6 +2,7 @@
 - name: Test playbook
   hosts: rodopi
   gather_facts: true
+  become: true
 
   tasks:
 
@@ -13,10 +14,12 @@
         msg: "ansible user = {{ ansible_user }}"
 
 
-    - name: execute command
+    - name: Get location of ssh key (required with semaphore)
       command: echo ~
       delegate_to: localhost
       register: command_output
+      vars:
+        ansible_become: false
 
     - debug:
         msg: "tilde = |{{ command_output.stdout }}|"
