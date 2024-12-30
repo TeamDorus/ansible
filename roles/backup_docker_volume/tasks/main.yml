@@ -74,6 +74,28 @@
   when: stop_for_backup is undefined or stop_for_backup is true
 
 
+
+
+- name: Get location of ssh key (required with semaphore)
+  command: echo ~
+  delegate_to: localhost
+  register: command_output1
+
+- name: Get location of ssh key (required with semaphore)
+  command: echo ~
+  delegate_to: localhost
+  register: command_output2
+  vars:
+    ansible_become: false
+
+- debug:
+    msg: "tilde1 = |{{ command_output1.stdout }}|"
+- debug:
+    msg: "tilde2 = |{{ command_output2.stdout }}|"
+
+
+
+
 - name: Get location of ssh key (required with semaphore)
   command: echo ~
   delegate_to: localhost
