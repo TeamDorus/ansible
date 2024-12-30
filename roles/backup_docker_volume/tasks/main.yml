@@ -77,26 +77,22 @@
   when: stop_for_backup is undefined or stop_for_backup is true
 
 
+# - name: Get location of ssh key (required with semaphore)
+#   command: echo ~
+#   delegate_to: localhost
+#   register: command_output1
 
+# - name: Get location of ssh key (required with semaphore)
+#   command: echo ~
+#   delegate_to: localhost
+#   register: command_output2
+#   vars:
+#     ansible_become: false
 
-- name: Get location of ssh key (required with semaphore)
-  command: echo ~
-  delegate_to: localhost
-  register: command_output1
-
-- name: Get location of ssh key (required with semaphore)
-  command: echo ~
-  delegate_to: localhost
-  register: command_output2
-  vars:
-    ansible_become: false
-
-- debug:
-    msg: "tilde1 = |{{ command_output1.stdout }}|"
-- debug:
-    msg: "tilde2 = |{{ command_output2.stdout }}|"
-
-
+# - debug:
+#     msg: "tilde1 = |{{ command_output1.stdout }}|"
+# - debug:
+#     msg: "tilde2 = |{{ command_output2.stdout }}|"
 
 
 - name: Get location of ssh key (required with semaphore)
@@ -105,10 +101,6 @@
   register: command_output
   vars:
     ansible_become: false
-
-- debug:
-    msg: "tilde = |{{ command_output.stdout }}|"
-
 
 - name: Copy backup from remote host to the backup_share
   command: scp -i {{ command_output.stdout }}/.ssh/id_rsa -o StrictHostKeyChecking=no {{ ansible_user }}@{{ ansible_default_ipv4.address }}:/tmp/{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
