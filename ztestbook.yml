@@ -16,3 +16,8 @@
     - name: execute command
       command: echo ~
       delegate_to: localhost
+      register: command_output
+
+    - debug:
+        msg: "tilde = |{{ command_output.stdout }}|"
+
