@@ -81,6 +81,9 @@
   vars:
     ansible_become: false
 
+- debug:
+    msg: "tilde = |{{ command_output.stdout }}|"
+
 
 - name: Copy backup from remote host to the backup_share
   command: scp -i {{ command_output.stdout }}/.ssh/id_rsa -o StrictHostKeyChecking=no {{ ansible_user }}@{{ ansible_default_ipv4.address }}:/tmp/{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
