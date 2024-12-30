@@ -14,5 +14,5 @@
 
 
     - name: execute command
-      command: eval ~
+      command: echo ~
       delegate_to: localhost
