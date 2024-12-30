@@ -74,8 +74,14 @@
   when: stop_for_backup is undefined or stop_for_backup is true
 
 
+- name: Get location of ssh key (required with semaphore)
+  command: echo ~
+  delegate_to: localhost
+  register: command_output
+
+
 - name: Copy backup from remote host to the backup_share
-  command: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no {{ ansible_user }}@{{ ansible_default_ipv4.address }}:/tmp/{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
+  command: scp -i {{ command_output.stdout }}/.ssh/id_rsa -o StrictHostKeyChecking=no {{ ansible_user }}@{{ ansible_default_ipv4.address }}:/tmp/{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
   delegate_to: localhost
 
 
