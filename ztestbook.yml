@@ -1,6 +1,6 @@
 ---
 - name: Test playbook
-  hosts: olympos
+  hosts: rodopi
   gather_facts: true
 
   tasks:
@@ -8,3 +8,11 @@
     - debug:
         #var: ansible_facts
         msg: "Inventory hostname = {{ inventory_hostname }}"
+
+    - debug:
+        msg: "ansible user = {{ ansible_user }}"
+
+
+    - name: execute command
+      command: ls -la ~
+      delegate_to: localhost
