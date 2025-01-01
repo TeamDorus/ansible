@@ -38,6 +38,12 @@ services:
       SEMAPHORE_LDAP_ACTIVATED: 'no'
     volumes:
       - ~/certificates/:/tmp/semaphore/certificates/:ro
+      - dotssh:/tmp/semaphore/.ssh
+      - dotansible:/tmp/semaphore/.ansible
     depends_on:
       - mysql
 
+volumes:
+  dotssh:
+  dotansible:
+  
