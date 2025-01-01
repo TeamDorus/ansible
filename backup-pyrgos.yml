@@ -24,6 +24,6 @@
         name: backup_secrets
 
 
-    - name: Backup terraform state files
-      include_role:
-        name: backup_terraform
+    # - name: Backup terraform state files
+    #   include_role:
+    #     name: backup_terraform
