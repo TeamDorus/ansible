@@ -232,29 +232,29 @@
       vars:
         ansible_become: false   # clone as {{ ansible_user }}
 
-    - name: Copy terraform secrets pw
-      copy:
-        src: "{{ item }}"
-        dest: "{{ projects_dir }}/terraform/secret_vars_pw"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0600'
-        decrypt: false          # do not decrypt the vault file
-      with_first_found:
-        - "~{{ ansible_user }}/terraform/secret_vars_pw"
-        - "~{{ ansible_user }}/Documents/terraform/secret_vars_pw"
+    # - name: Copy terraform secrets pw
+    #   copy:
+    #     src: "{{ item }}"
+    #     dest: "{{ projects_dir }}/terraform/secret_vars_pw"
+    #     owner: "{{ ansible_user }}"
+    #     group: "{{ ansible_user }}"
+    #     mode: '0600'
+    #     decrypt: false          # do not decrypt the vault file
+    #   with_first_found:
+    #     - "~{{ ansible_user }}/terraform/secret_vars_pw"
+    #     - "~{{ ansible_user }}/Documents/terraform/secret_vars_pw"
 
-    - name: Copy terraform secrets api
-      copy:
-        src: "{{ item }}"
-        dest: "{{ projects_dir }}/terraform/secret_vars_api"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0600'
-        decrypt: false          # do not decrypt the vault file
-      with_first_found:
-        - "~{{ ansible_user }}/terraform/secret_vars_api"
-        - "~{{ ansible_user }}/Documents/terraform/secret_vars_api"
+    # - name: Copy terraform secrets api
+    #   copy:
+    #     src: "{{ item }}"
+    #     dest: "{{ projects_dir }}/terraform/secret_vars_api"
+    #     owner: "{{ ansible_user }}"
+    #     group: "{{ ansible_user }}"
+    #     mode: '0600'
+    #     decrypt: false          # do not decrypt the vault file
+    #   with_first_found:
+    #     - "~{{ ansible_user }}/terraform/secret_vars_api"
+    #     - "~{{ ansible_user }}/Documents/terraform/secret_vars_api"
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
