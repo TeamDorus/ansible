@@ -1,0 +1,49 @@
+---
+- name: Create base directory
+  file:
+    path: "{{ semaphore_volume_dir }}"
+    state: directory
+
+
+- name: Create data directory for mysql
+  file:
+    path: "{{ semaphore_volume_dir }}/mysql"
+    state: directory
+
+
+- name: Create docker-compose.yml file from template
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ semaphore_volume_dir }}/docker-compose.yml"
+
+
+- name: Start the docker stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ semaphore_volume_dir }}"
+    state: present
+
+
+- name: Add nodered service to VM config in Netbox
+  include_role:
+    name: config_netbox_service_create
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#         Additional configuration for Semaphore and Semaphore tasks
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+# additional docker exec commands
+
+
+- name: Create Let's Encrypt certificates directory (for proxmox config)
+  file:
+    path: "~/certificates"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+
+
