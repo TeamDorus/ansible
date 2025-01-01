@@ -5,17 +5,8 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een ansible developemnt systeem op te tuigen
-  hosts:
-    - pyrgos
+  hosts: pyrgos
   become: true
-
-
-  pre_tasks:
-    - name: Load variable files
-      include_vars: "{{ item }}"
-      with_first_found:
-        - "vars/devsys_{{ ansible_distribution }}.yml"
-        - "vars/devsys_default.yml"
 
 
   tasks:
@@ -87,7 +78,40 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #         Install ssh keys and gitconfig file for ansible_user
+    #         D O C K E R
+    #
+    #         Install docker/docker-compose and clone docker git repository
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - include_role:
+        name: docker
+
+    - include_role:
+        name: config_portainer_endpoint_create
+
+    - name: Create docker directory
+      file:
+        path: "~{{ ansible_user }}/docker"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Clone docker repository
+      git:
+        repo: git@github.com:TeamDorus/docker.git
+        accept_hostkey: true
+        dest: "~{{ ansible_user }}/docker"
+        clone: true
+        update: true
+      vars:
+        ansible_become: false   # clone as {{ ansible_user }}
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #         A N S I B L E
+    #
+    #         Install ansible and clone ansible GIT repository and related secrets files
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Installeer alle files uit de .ssh directory voor ansible_user
@@ -107,12 +131,6 @@
         group: "{{ ansible_user }}"
         mode: preserve
 
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #
-    #         Install ansible & related tools
-    #
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Installeer ansible
       apt:
         name:
@@ -140,48 +158,9 @@
         ansible_become: false   # install as {{ ansible_user }}
 
 
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #
-    #         Install terraform
-    #
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Voeg terraform apt-key toe
-      apt_key:
-        url: https://apt.releases.hashicorp.com/gpg
-
-
-    - name: Voeg terraform repo toe
-      apt_repository:
-        repo: deb [arch=amd64] https://apt.releases.hashicorp.com jammy main
-
-    - name: Installeer terraform
-      apt:
-        name: terraform
-        state: present
-        update_cache: true
-
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #
-    #         Install docker and docker-compose
-    #
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - include_role:
-        name: docker
-
-    - include_role:
-        name: config_portainer_endpoint_create
-
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #
-    #         Clone ansible GIT repository and related secrets files
-    #
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Create ansible directory
       file:
-        path: "{{ projects_dir }}/ansible"
+        path: "~{{ ansible_user }}/ansible"
         state: directory
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
@@ -190,7 +169,7 @@
       git:
         repo: git@github.com:TeamDorus/ansible.git
         accept_hostkey: true
-        dest: "{{ projects_dir }}/ansible"
+        dest: "~{{ ansible_user }}/ansible"
         clone: true
         update: true
       vars:
@@ -215,12 +194,30 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #         Clone terraform GIT repository and related secrets files
+    #         T E R R A F O R M
+    #
+    #         Install terraform and clone terraform GIT repository and related secrets files
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Voeg terraform apt-key toe
+      apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+
+
+    - name: Voeg terraform repo toe
+      apt_repository:
+        repo: deb [arch=amd64] https://apt.releases.hashicorp.com jammy main
+
+    - name: Installeer terraform
+      apt:
+        name: terraform
+        state: present
+        update_cache: true
+
+
     - name: Create terraform directory
       file:
-        path: "{{ projects_dir }}/terraform"
+        path: "~{{ ansible_user }}/terraform"
         state: directory
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
@@ -229,58 +226,74 @@
       git:
         repo: git@github.com:TeamDorus/terraform.git
         accept_hostkey: true
-        dest: "{{ projects_dir }}/terraform"
+        dest: "~{{ ansible_user }}/terraform"
         clone: true
         update: true
       vars:
         ansible_become: false   # clone as {{ ansible_user }}
 
-    # - name: Copy terraform secrets pw
-    #   copy:
-    #     src: "{{ item }}"
-    #     dest: "{{ projects_dir }}/terraform/secret_vars_pw"
-    #     owner: "{{ ansible_user }}"
-    #     group: "{{ ansible_user }}"
-    #     mode: '0600'
-    #     decrypt: false          # do not decrypt the vault file
-    #   with_first_found:
-    #     - "~{{ ansible_user }}/terraform/secret_vars_pw"
-    #     - "~{{ ansible_user }}/Documents/terraform/secret_vars_pw"
+    - name: Copy terraform secrets pw
+      copy:
+        src: "~{{ ansible_user }}/terraform/secret_vars_pw"
+        dest: "~{{ ansible_user }}/terraform/secret_vars_pw"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
 
-    # - name: Copy terraform secrets api
-    #   copy:
-    #     src: "{{ item }}"
-    #     dest: "{{ projects_dir }}/terraform/secret_vars_api"
-    #     owner: "{{ ansible_user }}"
-    #     group: "{{ ansible_user }}"
-    #     mode: '0600'
-    #     decrypt: false          # do not decrypt the vault file
-    #   with_first_found:
-    #     - "~{{ ansible_user }}/terraform/secret_vars_api"
-    #     - "~{{ ansible_user }}/Documents/terraform/secret_vars_api"
+    - name: Copy terraform secrets api
+      copy:
+        src: "~{{ ansible_user }}/terraform/secret_vars_api"
+        dest: "~{{ ansible_user }}/terraform/secret_vars_api"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #         Clone docker GIT repository
+    #         F L A S K
+    #
+    #         Clone flaskapp GIT repository and related secrets files
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Create terraform directory
+    - name: Create flaskapp directory
       file:
-        path: "{{ projects_dir }}/docker"
+        path: "~{{ ansible_user }}/flaskapp"
         state: directory
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
-    - name: Clone docker repository
+    - name: Clone flaskapp repository
       git:
-        repo: git@github.com:TeamDorus/docker.git
+        repo: git@github.com:TeamDorus/flaskapp.git
         accept_hostkey: true
-        dest: "{{ projects_dir }}/docker"
+        dest: "~{{ ansible_user }}/flaskapp"
         clone: true
         update: true
       vars:
         ansible_become: false   # clone as {{ ansible_user }}
+
+    - name: Create virtual environment for flaskapp
+      pip:
+        requirements: "~{{ ansible_user }}/flaskapp/flask/requirements.txt"
+        virtualenv: "~{{ ansible_user }}/flaskapp/flask/venv"
+        virtualenv_command: "python3 -m venv"
+      vars:
+        ansible_become: false   # create as {{ ansible_user }}
+
+    - name: Copy .env file with api keys etc
+      copy:
+        src: "~{{ ansible_user }}/flaskapp/flask/.env"
+        dest: "~{{ ansible_user }}/flaskapp/flask/.env"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+        decrypt: false          # do not decrypt the vault file
+
+
+
 
 
 
