@@ -53,12 +53,3 @@
         compose_folder: "{{ uptime_kuma_volume_dir }}"
         stop_for_backup: false
 
-
-    - name: Backup heimdall container
-      include_role:
-        name: backup_docker_volume
-      vars:
-        volume_folder: "{{ heimdall_volume_dir }}"
-        compose_folder: "{{ heimdall_volume_dir }}"
-        stop_for_backup: false
-

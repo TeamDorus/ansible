@@ -93,9 +93,6 @@
         name: docker_uptime-kuma
 
     - include_role:
-        name: docker_heimdall
-
-    - include_role:
         name: docker_hostscanner
 
     - include_role:
