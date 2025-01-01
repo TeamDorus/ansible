@@ -1,7 +1,7 @@
 ---
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#       P I N D O S
+#       P I N D O S         !! Let op: niet uitvoeren via Semaphore, want die draait op PINDOS
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to backup pindos
@@ -11,6 +11,7 @@
   vars_files:
     - roles/docker_portainer/vars/main.yml
     - roles/docker_homepage/vars/main.yml
+    - roles/docker_semaphore/vars/main.yml
 
 
   tasks:
@@ -33,9 +34,12 @@
         compose_folder: "{{ homepage_volume_dir }}"
 
 
-    - name: Backup secret files
+    - name: Backup semaphore container
       include_role:
-        name: backup_secrets
+        name: backup_docker_volume
       vars:
-        projects_dir: "~{{ ansible_user }}"
+        volume_folder: "{{ semaphore_volume_dir }}"
+        stop_for_backup: true
+        compose_folder: "{{ semaphore_volume_dir }}"
+
 

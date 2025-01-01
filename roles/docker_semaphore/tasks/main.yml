@@ -11,6 +11,14 @@
     state: directory
 
 
+- name: Create Let's Encrypt certificates directory on the docker host (for proxmox config)
+  file:
+    path: "~/certificates"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+
 - name: Create docker-compose.yml file from template
   template:
     src: "docker-compose.yml.j2"
@@ -23,27 +31,68 @@
     state: present
 
 
-- name: Add nodered service to VM config in Netbox
+- name: Add semaphore service to VM config in Netbox
   include_role:
     name: config_netbox_service_create
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-#         Additional configuration for Semaphore and Semaphore tasks
+#         Make sure all secret files are present and have the right ownership
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Copy the ansible secrets vault into the semaphore container
+  community.docker.docker_container_copy_into:
+    container: semaphore
+    path: "~/.ssh/id_rsa"
+    container_path: "/tmp/semaphore/.ssh/id_rsa"
+    owner_id: 1001 # sempahore
+    group_id: 0    # root
+    mode: 0600 # readable and writable only by owner
 
 
-# additional docker exec commands
-
-
-- name: Create Let's Encrypt certificates directory (for proxmox config)
-  file:
-    path: "~/certificates"
-    state: directory
+- name: Copy ansible vault secrets.yml naar tijdelijke locatie
+  copy:
+    src: "~{{ ansible_user }}/.ansible/secrets.yml"
+    dest: "/tmp/secrets.yml"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
+    mode: '0600'
+
+- name: Copy the ansible secrets vault into the semaphore container
+  community.docker.docker_container_copy_into:
+    container: semaphore
+    path: "/tmp/secrets.yml"
+    container_path: "/tmp/semaphore/.ansible/secrets.yml"
+    owner_id: 1001 # sempahore
+    group_id: 0    # root
+    mode: 0600 # readable and writable only by owner
+
+- name: Delete temporary copy of secrets.yml
+  file:
+    path: "/tmp/secrets.yml"
+    state: absent
 
 
+- name: Copy ansible vault password file naar tijdelijke locatie
+  copy:
+    src: "~{{ ansible_user }}/.ansible/passwd.txt"
+    dest: "/tmp/passwd.txt"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0600'
 
+- name: Copy the password file for the ansible secrtets vault into the semaphore container
+  community.docker.docker_container_copy_into:
+    container: semaphore
+    path: "/tmp/passwd.txt"
+    container_path: "/tmp/semaphore/.ansible/passwd.txt"
+    owner_id: 1001 # sempahore
+    group_id: 0    # root
+    mode: 0600 # readable and writable only by owner
+
+
+- name: Delete temporary copy of passwd.txt
+  file:
+    path: "/tmp/passwd.txt"
+    state: absent

@@ -25,6 +25,9 @@
     - include_role:
         name: docker_homepage
 
+    - include_role:
+        name: docker_semaphore
+
 
     - name: Add NetBox tags to the virtual machine
       netbox.netbox.netbox_virtual_machine:
