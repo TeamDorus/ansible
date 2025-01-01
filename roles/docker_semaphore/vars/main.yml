@@ -1,0 +1,11 @@
+---
+semaphore_volume_dir: "/opt/docker/semaphore"
+
+netbox_services:
+  [
+    {
+      name: semaphore,
+      port: 3000,
+      protocol: "tcp"
+    }
+  ]
