@@ -6,6 +6,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to backup pindos
   hosts: pindos
+  become: true
 
   vars_files:
     - roles/docker_portainer/vars/main.yml
@@ -21,7 +22,6 @@
         volume_folder: "{{ portainer_volume_dir }}"
         stop_for_backup: true
         compose_folder: "{{ portainer_volume_dir }}"
-        ansible_become: true
 
 
     - name: Backup homepage container
@@ -31,7 +31,6 @@
         volume_folder: "{{ homepage_volume_dir }}"
         stop_for_backup: true
         compose_folder: "{{ homepage_volume_dir }}"
-        ansible_become: true
 
 
     - name: Backup secret files
@@ -39,5 +38,4 @@
         name: backup_secrets
       vars:
         projects_dir: "~{{ ansible_user }}"
-        ansible_become: true
 

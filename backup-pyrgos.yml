@@ -5,8 +5,8 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to backup all secrets related files on development systems
-  hosts:
-    - pyrgos
+  hosts: pyrgos
+  become: true
 
 
   pre_tasks:
@@ -22,12 +22,8 @@
     - name: Backup secret files
       include_role:
         name: backup_secrets
-      vars:
-        ansible_become: true
 
 
     - name: Backup terraform state files
       include_role:
         name: backup_terraform
-      vars:
-        ansible_become: true

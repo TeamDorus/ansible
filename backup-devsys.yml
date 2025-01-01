@@ -8,6 +8,7 @@
   hosts:
     - tags_devsys
     - tags_devsys_workstation
+  become: true
 
 
 
@@ -25,12 +26,8 @@
     - name: Backup secret files
       include_role:
         name: backup_secrets
-      vars:
-        ansible_become: true
 
 
     - name: Backup terraform state files
       include_role:
         name: backup_terraform
-      vars:
-        ansible_become: true

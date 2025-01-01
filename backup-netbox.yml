@@ -6,6 +6,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to backup netbox
   hosts: netbox
+  become: true
 
 
   vars_files:
@@ -21,4 +22,3 @@
         volume_folder: "{{ netbox_volume_dir }}"
         stop_for_backup: true
         compose_folder: "{{ netbox_docker_dir }}"
-        ansible_become: true

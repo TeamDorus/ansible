@@ -6,6 +6,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook to backup olympos
   hosts: olympos
+  become: true
 
   vars_files:
     - roles/docker_influxdb/vars/main.yml
@@ -24,7 +25,6 @@
         volume_folder: "{{ hostscanner_volume_dir }}"
         compose_folder: "{{ hostscanner_volume_dir }}"
         stop_for_backup: false
-        ansible_become: true
 
 
     - name: Backup influxdb container
@@ -34,7 +34,6 @@
         volume_folder: "{{ influxdb_volume_dir }}"
         compose_folder: "{{ influxdb_volume_dir }}"
         stop_for_backup: true
-        ansible_become: true
 
 
     - name: Backup grafana container
@@ -44,7 +43,6 @@
         volume_folder: "{{ grafana_volume_dir }}"
         compose_folder: "{{ grafana_volume_dir }}"
         stop_for_backup: false
-        ansible_become: true
 
 
     - name: Backup uptime-kuma container
@@ -54,7 +52,6 @@
         volume_folder: "{{ uptime_kuma_volume_dir }}"
         compose_folder: "{{ uptime_kuma_volume_dir }}"
         stop_for_backup: false
-        ansible_become: true
 
 
     - name: Backup heimdall container
@@ -64,5 +61,4 @@
         volume_folder: "{{ heimdall_volume_dir }}"
         compose_folder: "{{ heimdall_volume_dir }}"
         stop_for_backup: false
-        ansible_become: true
 
