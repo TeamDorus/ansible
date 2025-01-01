@@ -38,8 +38,8 @@ services:
       SEMAPHORE_LDAP_ACTIVATED: 'no'
     volumes:
       - ~/certificates/:/tmp/semaphore/certificates/:ro
-      - ~/.ansible/passwd.txt:/tmp/semaphore/.ansible/passwd.txt.read_only:ro
-      - ~/.ansible/secrets.yml:/tmp/semaphore/.ansible/secrets.yml.read_only:ro
+      # - ~/.ansible/passwd.txt:/tmp/semaphore/.ansible/passwd.txt.read_only:ro
+      # - ~/.ansible/secrets.yml:/tmp/semaphore/.ansible/secrets.yml.read_only:ro
       - ~/.ssh/id_rsa:/tmp/semaphore/.ssh/id_rsa.read_only:ro
     depends_on:
       - mysql
