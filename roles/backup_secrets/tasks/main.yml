@@ -12,8 +12,15 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+- name: Get location of secrets file (required with semaphore)
+  command: echo ~
+  delegate_to: localhost
+  register: command_output
+  vars:
+    ansible_become: false
+
 - name: Load in secret variables
-  include_vars: "~/.ansible/secrets.yml"
+  include_vars: "{{ command_output.stdout }}/.ansible/secrets.yml"
 
 
 - name: Ensure that the backup root exists on the Ansible controller
