@@ -74,7 +74,7 @@
     ansible_become: false
 
 - name: Copy backup from remote host to the backup_share
-  command: scp -i {{ command_output }}/.ssh/id_rsa -o StrictHostKeyChecking=no {{ ansible_user }}@{{ ansible_hostname }}:/tmp/{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
+  command: scp -i {{ command_output.stdout }}/.ssh/id_rsa -o StrictHostKeyChecking=no {{ ansible_user }}@{{ ansible_hostname }}:/tmp/{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
   delegate_to: localhost
 
 
