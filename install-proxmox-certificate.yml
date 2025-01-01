@@ -19,7 +19,7 @@
     ansible_user: root
     ansible_password: "{{ B22cluster_root_password }}"
 
-    local_cert_dir: "~{{ vm_user_name }}/certificates"
+    local_cert_dir: "~/certificates"
     proxmox_cert_dir: "/etc/pve/local"
 
     
