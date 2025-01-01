@@ -36,7 +36,7 @@
 
     - name: Define the backup folder
       set_fact:
-        backup_folder: "{{ backup_mnt }}/Docker-Backup/{{ ansible_hostname }}"
+        backup_folder: "{{ backup_mnt }}/Docker/{{ ansible_hostname }}"
 
 
     - name: Ensure that the backup folder exists on the Ansible controller
