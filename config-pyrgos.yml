@@ -241,8 +241,8 @@
         mode: '0600'
         decrypt: false          # do not decrypt the vault file
       with_first_found:
-        - "~{{ devuser }}/terraform/secret_vars_pw"
-        - "~{{ devuser }}/Documents/terraform/secret_vars_pw"
+        - "~{{ ansible_user }}/terraform/secret_vars_pw"
+        - "~{{ ansible_user }}/Documents/terraform/secret_vars_pw"
 
     - name: Copy terraform secrets api
       copy:
@@ -253,8 +253,8 @@
         mode: '0600'
         decrypt: false          # do not decrypt the vault file
       with_first_found:
-        - "~{{ devuser }}/terraform/secret_vars_api"
-        - "~{{ devuser }}/Documents/terraform/secret_vars_api"
+        - "~{{ ansible_user }}/terraform/secret_vars_api"
+        - "~{{ ansible_user }}/Documents/terraform/secret_vars_api"
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
