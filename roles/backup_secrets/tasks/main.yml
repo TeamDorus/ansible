@@ -12,15 +12,8 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-- name: Get location of secrets file (required with semaphore)
-  command: echo ~
-  delegate_to: localhost
-  register: command_output
-  vars:
-    ansible_become: false
-
 - name: Load in secret variables
-  include_vars: "{{ command_output.stdout }}/.ansible/secrets.yml"
+  include_vars: "~/.ansible/secrets.yml"
 
 
 - name: Ensure that the backup root exists on the Ansible controller
@@ -73,8 +66,15 @@
     dest: "/tmp/{{ backup_file }}"
 
 
+- name: Get location of ssh key (required with semaphore)
+  command: echo ~
+  delegate_to: localhost
+  register: command_output
+  vars:
+    ansible_become: false
+
 - name: Copy backup from remote host to the backup_share
-  command: scp -i ~{{ ansible_user}}/.ssh/id_rsa -o StrictHostKeyChecking=no {{ ansible_user }}@{{ ansible_hostname }}:/tmp/{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
+  command: scp -i {{ command_output }}/.ssh/id_rsa -o StrictHostKeyChecking=no {{ ansible_user }}@{{ ansible_hostname }}:/tmp/{{ backup_file }} {{ backup_folder }}/{{ backup_file }}
   delegate_to: localhost
 
 
