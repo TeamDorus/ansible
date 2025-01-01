@@ -12,12 +12,10 @@
   gather_facts: true
 
   vars_files:
-    - "{{ secrets_dir }}/secrets.yml"
+    - "~/.ansible/secrets.yml"
 
 
   vars:
-    secrets_dir: "~eric/ansible/vars"
-
     ansible_user: root
     ansible_password: "{{ B22cluster_root_password }}"
 
