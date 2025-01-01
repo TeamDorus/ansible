@@ -259,13 +259,25 @@
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
-    #         Create directory for storing Let's Encrypt certificates to install on ProxMox
+    #         Clone docker GIT repository
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Create certificates directory
+    - name: Create terraform directory
       file:
-        path: "~{{ devuser }}/certificates"
+        path: "{{ projects_dir }}/docker"
         state: directory
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
+
+    - name: Clone docker repository
+      git:
+        repo: git@github.com:TeamDorus/docker.git
+        accept_hostkey: true
+        dest: "{{ projects_dir }}/docker"
+        clone: true
+        update: true
+      vars:
+        ansible_become: false   # clone as {{ ansible_user }}
+
+
 
