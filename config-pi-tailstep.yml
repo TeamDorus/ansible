@@ -109,8 +109,13 @@
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Initialise Tailscale with pre-authorized key
-      command: "tailscale up --authkey={{ authkey }}"
+      command: "tailscale up --accept-routes --authkey={{ authkey }}"
       when: authkey != ""
+
+
+    - name: Make sure Tailscale is started
+      command: "tailscale up --accept-routes"
+      when: authkey == ""
 
 
     - name: Get Tailscale status
@@ -245,10 +250,10 @@
         name: docker
 
     - include_role:
-        name: docker_telegraf
+        name: config_portainer_endpoint_create
 
     - include_role:
-        name: config_portainer_endpoint_create
+        name: docker_telegraf
 
 
     - name: Add NetBox tags to the device
