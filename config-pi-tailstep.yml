@@ -24,6 +24,13 @@
 
 
   tasks:
+    # - debug:
+    #     var: ansible_distribution
+    # - debug:
+    #     var: ansible_distribution_release
+    # - debug:
+    #     var: ansible_os_family
+
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #
@@ -234,6 +241,26 @@
     #   Configure system monitoring
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - include_role:
+        name: docker
 
     - include_role:
-        name: pi_telegraf
+        name: docker_telegraf
+
+    - include_role:
+        name: config_portainer_endpoint_create
+
+
+    - name: Add NetBox tags to the device
+      netbox.netbox.netbox_device:
+        netbox_url: "{{ netbox_api_url }}"
+        netbox_token: "{{ netbox_api_token }}"
+        data:
+          name: "{{ ansible_hostname }}"
+          tags: 
+          - ansible
+          - docker
+          - "{{ ansible_distribution }}-{{ ansible_distribution_release }}"
+        state: present
+      delegate_to: localhost
+      when: ansible_facts['virtualization_role'] != "guest"
