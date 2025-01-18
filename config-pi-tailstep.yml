@@ -10,7 +10,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een Raspberry Pi als Tailscale Steppingstone te configureren
   hosts:
-    - Tailstep
+    - Tailstep    # Netbox device name !! Not the ip address of hostname
   become: true
 
 
@@ -129,43 +129,43 @@
     #   Add DNS entry for tailscale ip address
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Get current hosts @ pfsense
-      uri:
-        url: "{{ pfsense_api_url }}"
-        method: GET
-        headers:
-          Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
-        validate_certs: false
-      register: result
-      delegate_to: localhost
-      vars:
-        ansible_become: false   # execute as {{ ansible_user }}
+    # - name: Get current hosts @ pfsense
+    #   uri:
+    #     url: "{{ pfsense_api_url }}"
+    #     method: GET
+    #     headers:
+    #       Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
+    #     validate_certs: false
+    #   register: result
+    #   delegate_to: localhost
+    #   vars:
+    #     ansible_become: false   # execute as {{ ansible_user }}
 
 
-    - name: Create a list of current host ip addresses @ pfsense
-      set_fact:
-        addrs: "{{ result | json_query('json.data[*].ip') }}"
-      vars:
-        ansible_become: false   # execute as {{ ansible_user }}
+    # - name: Create a list of current host ip addresses @ pfsense
+    #   set_fact:
+    #     addrs: "{{ result | json_query('json.data[*].ip') }}"
+    #   vars:
+    #     ansible_become: false   # execute as {{ ansible_user }}
 
 
-    - name: Create host entry if the ip address does not yet exist in the list
-      uri:
-        url: "{{ pfsense_api_url }}"
-        method: POST
-        headers:
-          Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
-        validate_certs: false
-        body_format: "json"
-        body:
-          host: "{{ ansible_hostname }}"
-          domain: "bartok.thouars.nl"
-          ip: "{{ tailscale_ipv4.stdout }}"
-          apply: true
-      when: tailscale_ipv4.stdout not in addrs
-      delegate_to: localhost
-      vars:
-        ansible_become: false   # execute as {{ ansible_user }}
+    # - name: Create host entry if the ip address does not yet exist in the list
+    #   uri:
+    #     url: "{{ pfsense_api_url }}"
+    #     method: POST
+    #     headers:
+    #       Authorization: "{{ pfsense_api_id }} {{ pfsense_api_token }}"
+    #     validate_certs: false
+    #     body_format: "json"
+    #     body:
+    #       host: "{{ ansible_hostname }}"
+    #       domain: "bartok.thouars.nl"
+    #       ip: "{{ tailscale_ipv4.stdout }}"
+    #       apply: true
+    #   when: tailscale_ipv4.stdout not in addrs
+    #   delegate_to: localhost
+    #   vars:
+    #     ansible_become: false   # execute as {{ ansible_user }}
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -202,6 +202,19 @@
       delegate_to: localhost
       vars:
         ansible_become: false   # execute as {{ ansible_user }}
+
+
+    # - name: Make Tailscale address the Primary IP
+    #   netbox.netbox.netbox_device:
+    #     netbox_url: "{{ netbox_api_url }}"
+    #     netbox_token: "{{ netbox_api_token }}"
+    #     data:
+    #       name: "{{ inventory_hostname }}"
+    #       primary_ip4: "{{ tailscale_ipv4.stdout }}"
+
+
+
+
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
