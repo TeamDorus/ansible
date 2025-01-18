@@ -234,19 +234,6 @@
     #   Configure system monitoring
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Load in hostscanner variables
-      include_vars: "roles/docker_hostscanner/vars/main.yml"
-    - name: Load in hostscanner config file variables
-      include_vars: "roles/config_hostscanner_entry_create/vars/main.yml"
-
-
-    - name: Add Tailscale ip address to hostscanner config file
-      lineinfile:
-        path: "{{ hostscanner_volume_dir }}/{{ hostscanner_config_file }}"
-        line: "{{ tailscale_ipv4.stdout }}"
-      register: lineinfile
-      delegate_to: "{{ hostscanner_host }}"
-
 
     - include_role:
         name: pi_telegraf
