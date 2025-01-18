@@ -6,7 +6,7 @@
 
 - name: Add influx repo
   apt_repository:
-    repo: deb https://repos.influxdata.com/debian bullseye stable
+    repo: deb https://repos.influxdata.com/debian bookworm stable
 
 
 - name: Install telegraf

@@ -10,7 +10,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een Raspberry Pi als Tailscale Steppingstone te configureren
   hosts:
-    - Pi4_Tailstep
+    - Tailstep
   become: true
 
 
@@ -50,17 +50,17 @@
         name: Europe/Amsterdam
 
 
-    - name: Disable "glamor" to enhance VNC on a headless system
-      replace:
-        path: /usr/lib/systemd/scripts/glamor_test.sh
-        regexp: 'if ! raspi-config nonint is_pifour && raspi-config nonint is_kms ; then'
-        replace: 'if true ; then'
-      register: glamor
+    # - name: Disable "glamor" to enhance VNC on a headless system
+    #   replace:
+    #     path: /usr/lib/systemd/scripts/glamor_test.sh
+    #     regexp: 'if ! raspi-config nonint is_pifour && raspi-config nonint is_kms ; then'
+    #     replace: 'if true ; then'
+    #   register: glamor
 
 
-    - name: Reboot remote server when glamor file has been changed
-      reboot:
-      when: glamor.changed
+    # - name: Reboot remote server when glamor file has been changed
+    #   reboot:
+    #   when: glamor.changed
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -80,12 +80,12 @@
 
     - name: Add tailscale apt-key
       apt_key:
-        url: https://pkgs.tailscale.com/stable/raspbian/bullseye.noarmor.gpg
+        url: https://pkgs.tailscale.com/stable/raspbian/bookworm.noarmor.gpg
 
 
     - name: Add tailscale repo
       apt_repository:
-        repo: deb https://pkgs.tailscale.com/stable/raspbian bullseye main
+        repo: deb https://pkgs.tailscale.com/stable/raspbian bookworm main
 
 
     - name: Install tailscale
@@ -209,11 +209,11 @@
     #   Start the VNC server for remote desktop
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    - name: Make sure VNC server is started
-      systemd:
-        name: vncserver-x11-serviced
-        enabled: true
-        state: started
+    # - name: Make sure VNC server is started
+    #   systemd:
+    #     name: vncserver-x11-serviced
+    #     enabled: true
+    #     state: started
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
