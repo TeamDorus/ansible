@@ -10,7 +10,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - name: Playbook om een Raspberry Pi als Tailscale Steppingstone te configureren
   hosts:
-    - Tailstep    # Netbox device name !! Not the ip address of hostname
+    - tailstep    # Netbox device name !! Not the ip address of hostname
   become: true
 
 
@@ -57,7 +57,7 @@
         name: Europe/Amsterdam
 
 
-    # - name: Disable "glamor" to enhance VNC on a headless system
+    # - name: Disable "glamor" to enhance VNC on a headless system  # not necessary for Pi3; newer script takes already care of that
     #   replace:
     #     path: /usr/lib/systemd/scripts/glamor_test.sh
     #     regexp: 'if ! raspi-config nonint is_pifour && raspi-config nonint is_kms ; then'
@@ -109,13 +109,8 @@
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     - name: Initialise Tailscale with pre-authorized key
-      command: "tailscale up --accept-routes --authkey={{ authkey }}"
+      command: "tailscale up --authkey={{ authkey }}"   # do not accept routes yet, will break connectivity with the LAN
       when: authkey != ""
-
-
-    - name: Make sure Tailscale is started
-      command: "tailscale up --accept-routes"
-      when: authkey == ""
 
 
     - name: Get Tailscale status
@@ -216,7 +211,7 @@
         ansible_become: false   # execute as {{ ansible_user }}
 
 
-    # - name: Make Tailscale address the Primary IP
+    # - name: Make Tailscale address the Primary IP     Doesn't work    -  DO THIS MANUALLY IN NETBOX !!!
     #   netbox.netbox.netbox_device:
     #     netbox_url: "{{ netbox_api_url }}"
     #     netbox_token: "{{ netbox_api_token }}"
@@ -234,11 +229,11 @@
     #   Start the VNC server for remote desktop
     #
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # - name: Make sure VNC server is started
-    #   systemd:
-    #     name: vncserver-x11-serviced
-    #     enabled: true
-    #     state: started
+    - name: Make sure VNC server is started
+      systemd:
+        name: vncserver-x11-serviced
+        enabled: true
+        state: started
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -269,3 +264,26 @@
         state: present
       delegate_to: localhost
       when: ansible_facts['virtualization_role'] != "guest"
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Install Tools
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Install prerequisites
+      apt:
+        name:
+          - traceroute
+        state: present
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #
+    #   Finish up    !!!  FROM NOW ON USE TAILSCALE IP FOR COMMUNICATION WITH THIS HOST
+    #
+    #                     Make sure Netbox has tailscale address as Primary IP !!
+    #
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - name: Make sure Tailscale is started
+      command: "tailscale up --accept-routes"
