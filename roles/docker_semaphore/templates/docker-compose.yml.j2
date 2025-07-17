@@ -37,7 +37,7 @@ services:
       SEMAPHORE_ACCESS_KEY_ENCRYPTION: gs72mPntFATGJs9qK0pQ0rKtfidlexiMjYCH9gWKhTU=
       SEMAPHORE_LDAP_ACTIVATED: 'no'
     volumes:
-      - ~/certificates/:/tmp/semaphore/certificates/:ro
+      - /home/eric/certificates/:/tmp/semaphore/certificates/:ro
       - dotssh:/tmp/semaphore/.ssh
       - dotansible:/tmp/semaphore/.ansible
     depends_on:
