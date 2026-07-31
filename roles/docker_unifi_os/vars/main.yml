@@ -1,0 +1,31 @@
+---
+unifi_volume_dir: "/opt/docker/unifi_os"
+
+netbox_services:
+  [
+    {
+      name: unifi-dev-ctrl,
+      port: 8080,
+      protocol: "tcp"
+    },
+    {
+      name: unifi-os-https,
+      port: 11443,
+      protocol: "tcp"
+    },
+    {
+      name: unifi-portal-https,
+      port: 8843,
+      protocol: "tcp"
+    },
+    {
+      name: unifi-udp-1,
+      port: 3478,
+      protocol: "udp"
+    },
+    {
+      name: unifi-udp-2,
+      port: 10003,
+      protocol: "udp"
+    }
+  ]

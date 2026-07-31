@@ -4,8 +4,8 @@
 #       U N I F I
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-- name: Playbook to configure the host "unifi"
-  hosts: unifi
+- name: Playbook to configure the host "unifi-os"
+  hosts: unifi-os
   gather_facts: true
 
 
@@ -23,7 +23,7 @@
         name: config_hostscanner_entry_create
 
     - include_role:
-        name: docker_unifi
+        name: docker_unifi_os
 
 
     - name: Add NetBox tags to the virtual machine

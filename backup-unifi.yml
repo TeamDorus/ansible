@@ -11,7 +11,7 @@
 
   vars_files:
     - ~/.ansible/secrets.yml
-    - roles/docker_unifi/vars/main.yml
+    - roles/docker_unifi_os/vars/main.yml
 
 
   tasks:
