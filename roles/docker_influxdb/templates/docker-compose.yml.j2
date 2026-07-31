@@ -7,6 +7,10 @@ services:
     container_name: influxdb
     image: influxdb:2.4.0
     restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     ports:
       - 8086:8086
     volumes:
