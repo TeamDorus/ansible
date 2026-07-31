@@ -1,0 +1,33 @@
+---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Install packages
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Installeer Corosync package
+  apt:
+    name:
+      - corosync-qnetd
+    state: present
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#   Configure networtk interface for Q Device
+#     eth1 (usb dongle)
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- name: Add a line to the dhcp config file for the cluster interface name
+  ansible.builtin.lineinfile:
+    path: /etc/dhcpcd.conf
+    line: "interface {{ cluster_network_interface }}"
+  register: reboot_needed
+
+- name: Add a line to the dhcp config file for the cluster ip address
+  ansible.builtin.lineinfile:
+    path: /etc/dhcpcd.conf
+    line: "static ip_address={{ cluster_ip_address }}"
+
+- name: Reboot remote server when network config has changed
+  reboot:
+  when: reboot_needed.changed
