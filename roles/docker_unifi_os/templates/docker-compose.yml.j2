@@ -40,7 +40,7 @@ services:
 
   unifi-poller:
     container_name: unifi-poller
-    image: golift/unifi-poller:2.0
+    image: golift/unifi-poller:latest
     restart: unless-stopped
     environment:
     - UP_INFLUXDB_URL=http://olympos:8086
